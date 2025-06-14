@@ -29,6 +29,7 @@ npm start
 
 1. **Shuffle Mode**: Click "🔀 Shuffle" to randomize the order of cards (click again to return to ordered mode)
 2. **Language Direction**: Click "🔄 Source → Target" to switch between source language first and target language first
+3. **Theme Toggle**: Click the sun/moon icon in the top right corner to switch between light and dark modes
 
 ## Tips for Effective Learning
 

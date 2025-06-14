@@ -3,6 +3,58 @@
   box-sizing: border-box;
 }
 
+:root {
+  /* Light theme variables */
+  --bg-color: #f5f7fa;
+  --text-color: #333;
+  --header-color: #2c3e50;
+  --subtitle-color: #7f8c8d;
+  --card-bg: #ffffff;
+  --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --card-border: 1px solid #e0e0e0;
+  --button-bg: #3498db;
+  --button-bg-rgb: 52, 152, 219;
+  --button-hover-bg: #2980b9;
+  --button-text: white;
+  --debug-bg: #f8f9fa;
+  --debug-border: #ddd;
+  --debug-code-bg: #f1f1f1;
+  --error-color: #e74c3c;
+  --error-bg: rgba(231, 76, 60, 0.1);
+  --scrollbar-track: #f1f1f1;
+  --scrollbar-thumb: #bbb;
+  --scrollbar-thumb-hover: #999;
+  --theme-toggle-bg: rgba(0, 0, 0, 0.05);
+  --theme-toggle-hover-bg: rgba(0, 0, 0, 0.1);
+  --theme-toggle-icon: #2c3e50;
+}
+
+[data-theme='dark'] {
+  /* Dark theme variables */
+  --bg-color: #1a1a2e;
+  --text-color: #e0e0e0;
+  --header-color: #6ab7ff;
+  --subtitle-color: #a0a0a0;
+  --card-bg: #16213e;
+  --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  --card-border: 1px solid #2c3e50;
+  --button-bg: #3498db;
+  --button-bg-rgb: 52, 152, 219;
+  --button-hover-bg: #1d6fa5;
+  --button-text: white;
+  --debug-bg: #2c3e50;
+  --debug-border: #4a6583;
+  --debug-code-bg: #1e2b3c;
+  --error-color: #ff6b6b;
+  --error-bg: rgba(255, 107, 107, 0.1);
+  --scrollbar-track: #2c3e50;
+  --scrollbar-thumb: #4a6583;
+  --scrollbar-thumb-hover: #5d7ea6;
+  --theme-toggle-bg: rgba(255, 255, 255, 0.05);
+  --theme-toggle-hover-bg: rgba(255, 255, 255, 0.1);
+  --theme-toggle-icon: #e0e0e0;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -11,9 +63,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f7fa;
-  color: #333;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 code {
@@ -62,16 +115,16 @@ button:active {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #bbb;
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #999;
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Animation Keyframes */

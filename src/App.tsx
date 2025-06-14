@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import FlashcardDeck from './components/FlashcardDeck';
+import ThemeToggle from './components/ThemeToggle';
 import { fetchFlashcardData } from './services/spreadsheetService';
 import { Flashcard } from './types/Flashcard';
 import { getBooleanQueryParam } from './utils/urlUtils';
+import { useTheme } from './hooks/useTheme';
 import './styles/App.css';
 
 const App: React.FC = () => {
@@ -10,6 +12,9 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [debugInfo, setDebugInfo] = useState<string>('');
+  
+  // Theme management
+  const { theme, toggleTheme } = useTheme();
   
   // Check if debug mode is enabled via URL query parameter - default is false
   const isDebugMode = getBooleanQueryParam('debug', false);
@@ -99,6 +104,7 @@ const App: React.FC = () => {
       <header className="app-header">
         <h1>{headerTitle}</h1>
         <p className="app-subtitle">Learn vocabulary with interactive flashcards</p>
+        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       </header>
       
       <main className="app-main">

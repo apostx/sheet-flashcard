@@ -7,6 +7,7 @@ A fully responsive web application for learning vocabulary between any language 
 - Interactive flashcards supporting any language pair
 - Flip animation to reveal translations
 - Audio playback for both languages (when URLs are provided)
+- Dark/light mode theme toggle for comfortable viewing
 - Fully responsive design for all devices (desktop, tablet, and mobile)
 - Optimized touch interactions for mobile users
 - Support for long text and different writing systems
@@ -67,6 +68,7 @@ The compiled files will be placed in the `dist` directory.
 ### Advanced Features
 - Click the "🔀 Shuffle" button to randomize the order of cards
 - Click the "🔄 Source → Target" button to switch language direction
+- Click the theme toggle button in the top right corner to switch between dark and light modes
 
 ## Data Structure
 

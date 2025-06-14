@@ -6,6 +6,19 @@ All notable changes to the Language Flashcard project will be documented in this
 
 This project was developed with the assistance of Claude 3.7 (developed by Anthropic) in June 2025.
 
+## [2.4.0] - 2025-06-15
+
+### Added
+- Dark mode / light mode theme toggle
+- Theme toggle button in header
+- CSS variables for consistent theming
+- Theme persistence using localStorage
+
+### Improved
+- Button styling and hover states
+- Better color contrast in both themes
+- Smooth transitions between theme changes
+
 ## [2.3.2] - 2025-06-14
 
 ### Removed

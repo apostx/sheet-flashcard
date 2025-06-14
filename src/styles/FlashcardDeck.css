@@ -26,8 +26,9 @@
 
 .control-button {
   padding: 0.6rem 1rem;
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border: var(--card-border);
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.9rem;
@@ -35,16 +36,18 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  font-weight: 500;
 }
 
 .control-button:hover {
-  background-color: #e0e0e0;
+  background-color: rgba(var(--button-bg-rgb), 0.15);
+  border-color: var(--button-bg);
 }
 
 .control-button.active {
-  background-color: #3498db;
-  color: white;
-  border-color: #3498db;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border-color: var(--button-bg);
 }
 
 .deck-info {

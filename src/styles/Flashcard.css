@@ -21,7 +21,7 @@
   text-align: center;
   transition: transform 0.6s, box-shadow 0.3s;
   transform-style: preserve-3d;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  box-shadow: var(--card-shadow);
   border-radius: 10px;
 }
 
@@ -50,13 +50,13 @@
 }
 
 .flashcard-front {
-  background-color: #3498db;
-  color: white;
+  background-color: var(--button-bg);
+  color: var(--button-text);
 }
 
 .flashcard-back {
   background-color: #2ecc71;
-  color: white;
+  color: var(--button-text);
   transform: rotateY(180deg);
 }
 

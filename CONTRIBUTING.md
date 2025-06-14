@@ -42,6 +42,8 @@ npm start
 
 - `src/components/`: React components
 - `src/hooks/`: Custom React hooks
+  - `useAudio.ts`: Hook for audio playback
+  - `useTheme.ts`: Hook for theme management (dark/light mode)
 - `src/services/`: API and data services
 - `src/styles/`: CSS files
 - `src/types/`: TypeScript type definitions
@@ -70,6 +72,15 @@ Use clear and descriptive commit messages:
 - Create one pull request per feature or bug fix
 - Include a clear description of changes
 - Reference any related issues
+
+### Theme Implementation
+
+When working with themes:
+
+- Use CSS variables defined in `global.css` for all color-related styling
+- Ensure components work properly in both light and dark modes
+- Test any UI changes in both themes
+- Maintain sufficient contrast ratios for accessibility
 
 ## Feature Requests and Bug Reports
 

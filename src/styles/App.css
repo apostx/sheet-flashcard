@@ -13,13 +13,13 @@
 }
 
 .app-header h1 {
-  color: #2c3e50;
+  color: var(--header-color);
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
 }
 
 .app-subtitle {
-  color: #7f8c8d;
+  color: var(--subtitle-color);
   font-size: 1rem;
   margin-top: 0;
 }
@@ -53,7 +53,7 @@
   height: 50px;
   border: 5px solid rgba(52, 152, 219, 0.2);
   border-radius: 50%;
-  border-top-color: #3498db;
+  border-top-color: var(--button-bg);
   animation: spin 1s ease-in-out infinite;
   margin-bottom: 1rem;
 }
@@ -63,10 +63,10 @@
 }
 
 .error {
-  color: #e74c3c;
-  border: 1px solid #e74c3c;
+  color: var(--error-color);
+  border: 1px solid var(--error-color);
   border-radius: 5px;
-  background-color: rgba(231, 76, 60, 0.1);
+  background-color: var(--error-bg);
 }
 
 .error h2 {
@@ -76,8 +76,8 @@
 .retry-button {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
-  background-color: #3498db;
-  color: white;
+  background-color: var(--button-bg);
+  color: var(--button-text);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -86,13 +86,13 @@
 }
 
 .retry-button:hover {
-  background-color: #2980b9;
+  background-color: var(--button-hover-bg);
 }
 
 .app-footer {
   margin-top: 2rem;
   text-align: center;
-  color: #7f8c8d;
+  color: var(--subtitle-color);
   font-size: 0.9rem;
 }
 
@@ -106,9 +106,9 @@
 .debug-info {
   margin-top: 20px;
   padding: 15px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--debug-border);
   border-radius: 5px;
-  background-color: #f8f9fa;
+  background-color: var(--debug-bg);
   width: 100%;
   max-width: 800px;
   overflow-x: auto;
@@ -119,7 +119,7 @@
   word-wrap: break-word;
   font-family: monospace;
   font-size: 0.9rem;
-  background-color: #f1f1f1;
+  background-color: var(--debug-code-bg);
   padding: 10px;
   border-radius: 3px;
 }
