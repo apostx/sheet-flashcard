@@ -7,6 +7,7 @@ A fully responsive web application for learning vocabulary between any language 
 - Interactive flashcards supporting any language pair
 - Flip animation to reveal translations
 - Audio playback for both languages (when URLs are provided)
+- **Autoplay mode** with customizable timing for hands-free learning
 - Dark/light mode theme toggle for comfortable viewing
 - Fully responsive design for all devices (desktop, tablet, and mobile)
 - Optimized touch interactions for mobile users
@@ -76,6 +77,15 @@ The compiled files will be placed in the `dist` directory.
 - Click the "🔄 Source → Target" button to switch language direction
 - Click the theme toggle button in the top right corner to switch between dark and light modes
 
+### Autoplay Mode
+- Click the "▶️ Autoplay" button to enable automatic card progression
+- Click the "⏱️ Timing" button to customize autoplay timing:
+  - **Flip Time**: How long to show the front before flipping (0.5-10 seconds)
+  - **Next Time**: How long to show the back before next card (0.5-10 seconds)
+- Autoplay automatically pauses when you interact with cards manually
+- Timer resets on any manual navigation or card flip
+- Autoplay pauses when browser tab is not active
+
 ## Data Structure
 
 The application fetches data from a Google Spreadsheet with the following structure:
@@ -109,7 +119,15 @@ The application supports the following URL parameters:
 
 - `spreadsheetId` - Specify a custom Google Spreadsheet ID
 - `sheetId` - Specify which sheet to use (default is 0)
+- `flipTime` - Autoplay flip timing in milliseconds (default: 3000)
+- `nextTime` - Autoplay next card timing in milliseconds (default: 3000)
 - `debug` - Enable debug mode to see detailed information (`?debug=true` or simply `?debug`). Debug information is always hidden by default, regardless of environment.
+
+#### Autoplay URL Examples
+- Fast pace: `?flipTime=1000&nextTime=1500`
+- Slow study: `?flipTime=5000&nextTime=6000`
+- Quick flip only: `?flipTime=1000`
+- Custom spreadsheet with timing: `?spreadsheetId=YOUR_ID&flipTime=2000&nextTime=3000`
 
 Alternatively, you can update the `DEFAULT_SPREADSHEET_ID` constant in `src/services/spreadsheetService.ts` with your spreadsheet ID.
 

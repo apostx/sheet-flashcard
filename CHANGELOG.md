@@ -6,6 +6,31 @@ All notable changes to the Language Flashcard project will be documented in this
 
 This project was developed with the assistance of Claude 3.7 (developed by Anthropic) in June 2025.
 
+## [2.6.0] - 2025-06-16
+
+### Added
+- **Autoplay Feature**: Automatic card progression with customizable timing
+  - ▶️ Autoplay button to start/stop automatic card progression
+  - ⏱️ Timing controls for customizing autoplay behavior
+  - Separate timing controls for flip time (front → back) and next card time (back → next)
+  - URL parameter support for sharing timing settings (`?flipTime=2000&nextTime=4000`)
+  - Smart timer reset on manual user interactions
+  - Automatic pause when browser tab is not visible
+  - Range: 0.5-10 seconds for both timing controls
+  - Real-time URL parameter display and updates
+
+### Enhanced
+- User experience with hands-free learning capability
+- Accessibility with keyboard navigation still working during autoplay
+- Performance with proper timer cleanup and memory leak prevention
+- Mobile responsiveness for timing controls
+
+### Technical
+- New `urlParams.ts` utility for URL parameter management
+- Enhanced timer management with dynamic timing values
+- Visibility API integration for tab focus detection
+- Responsive CSS for timing control sliders
+
 ## [2.5.0] - 2025-06-15
 
 ### Added

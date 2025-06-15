@@ -134,7 +134,92 @@
   vertical-align: middle;
 }
 
-/* Keep deck controls in column layout even on desktop */
+/* Timing Controls */
+.timing-controls {
+  background-color: var(--card-bg);
+  border: var(--card-border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.timing-control {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.timing-control:last-of-type {
+  margin-bottom: 0.5rem;
+}
+
+.timing-control label {
+  font-size: 0.9rem;
+  color: var(--text-color);
+  min-width: 180px;
+  font-weight: 500;
+}
+
+.timing-control input[type="range"] {
+  flex: 1;
+  min-width: 100px;
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.timing-control input[type="range"]::-webkit-slider-track {
+  width: 100%;
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+}
+
+.timing-control input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--button-bg);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid var(--card-bg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.timing-control input[type="range"]::-moz-range-track {
+  width: 100%;
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+  border: none;
+}
+
+.timing-control input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--button-bg);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid var(--card-bg);
+  box-sizing: border-box;
+}
+
+.timing-control span {
+  font-size: 0.9rem;
+  color: var(--text-color);
+  font-weight: 600;
+  min-width: 40px;
+  text-align: right;
+}
+
 @media (min-width: 768px) {
   .deck-controls {
     flex-direction: column;
@@ -170,6 +255,25 @@
   .no-cards, .error-card {
     padding: 1.5rem;
     margin: 1.5rem auto;
+  }
+  
+  .timing-controls {
+    padding: 0.75rem;
+  }
+  
+  .timing-control {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  .timing-control label {
+    min-width: auto;
+    text-align: center;
+  }
+  
+  .timing-control span {
+    text-align: center;
   }
 }
 

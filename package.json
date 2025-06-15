@@ -1,6 +1,6 @@
 {
   "name": "language-flashcard",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "A language flashcard application for learning vocabulary between any languages",
   "main": "index.js",
   "homepage": "https://apostx.github.io/language-flashcard/",
