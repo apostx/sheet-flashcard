@@ -6,6 +6,25 @@ All notable changes to the Language Flashcard project will be documented in this
 
 This project was developed with the assistance of Claude 3.7 (developed by Anthropic) in June 2025.
 
+## [2.5.0] - 2025-06-15
+
+### Added
+- Support for card repetition via fifth column in spreadsheet
+- Added keyboard navigation for card browsing and flipping
+  - Left/right arrow keys to navigate between cards
+  - Up/down arrow keys and spacebar to flip cards
+
+### Changed
+- Improved desktop layout with better sizing and spacing
+- Enhanced button styling for clearer visual hierarchy
+- Removed focus state styling for cleaner UI appearance
+- Shuffle mode is now enabled by default
+
+### Fixed
+- Fixed layout issues with card index display on desktop
+- Corrected display inconsistencies in control buttons
+- Fixed button icon display issues
+
 ## [2.4.0] - 2025-06-15
 
 ### Added

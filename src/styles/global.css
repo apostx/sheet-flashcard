@@ -3,6 +3,16 @@
   box-sizing: border-box;
 }
 
+/* Global focus styles - completely remove focus indicators */
+button:focus,
+[role="button"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: inherit !important;
+  background-color: inherit !important;
+  color: inherit !important;
+}
+
 :root {
   /* Light theme variables */
   --bg-color: #f5f7fa;

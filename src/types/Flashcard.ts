@@ -6,4 +6,5 @@ export interface Flashcard {
   targetSoundUrl?: string;
   sourceLanguage?: string;
   targetLanguage?: string;
+  repetitionCount?: number;
 }

@@ -20,16 +20,20 @@ npm start
 ![Flashcard Navigation](https://via.placeholder.com/600x300/e0e0e0/666666?text=Flashcard+Navigation)
 
 1. **Flip a card**: Click or tap anywhere on the flashcard to flip it and see the translation
+   - You can also use the up/down arrow keys or spacebar to flip
 2. **Navigate**: Use the "Previous" and "Next" buttons to move between cards
+   - You can also use the left/right arrow keys to navigate
 3. **Listen**: Click the sound button (🔊) to hear pronunciation (when available)
 
 ### Features
 
 ![Application Features](https://via.placeholder.com/600x300/e0e0e0/666666?text=Application+Features)
 
-1. **Shuffle Mode**: Click "🔀 Shuffle" to randomize the order of cards (click again to return to ordered mode)
-2. **Language Direction**: Click "🔄 Source → Target" to switch between source language first and target language first
-3. **Theme Toggle**: Click the sun/moon icon in the top right corner to switch between light and dark modes
+1. **Shuffle Mode**: Enabled by default. Click the button to switch between shuffle and ordered modes
+2. **Repetition Control**: Cards appear multiple times based on the value in the repetition column
+3. **Language Direction**: Click "🔄 Source → Target" to switch between source language first and target language first
+4. **Theme Toggle**: Click the sun/moon icon in the top right corner to switch between light and dark modes
+5. **Keyboard Controls**: Use arrow keys and spacebar to navigate and flip cards
 
 ## Tips for Effective Learning
 
@@ -55,6 +59,7 @@ To use your own vocabulary list:
      - Source language audio URL (optional)
      - Target language translation
      - Target language audio URL (optional)
+     - Repetition count (optional, default: 1)
 2. Make the spreadsheet publicly accessible
 3. Update the application code with your spreadsheet ID
 

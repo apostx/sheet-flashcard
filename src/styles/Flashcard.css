@@ -1,7 +1,7 @@
 .flashcard {
   width: 100%;
-  max-width: 400px;
-  height: 250px;
+  max-width: 500px; /* Increased from 400px for better desktop experience */
+  height: 300px; /* Increased from 250px for better desktop experience */
   perspective: 1000px;
   margin: 2rem auto;
   cursor: pointer;
@@ -100,6 +100,14 @@
   min-width: 40px;
   min-height: 40px;
   margin-top: 0.5rem;
+  /* Remove ALL focus styling */
+  outline: none;
+}
+
+.audio-button:focus {
+  /* No focus styling at all */
+  outline: none;
+  box-shadow: none;
 }
 
 .audio-button:hover {
@@ -126,6 +134,14 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
+  /* Remove ALL focus styling */
+  outline: none;
+}
+
+.nav-button:focus {
+  /* No focus styling at all */
+  outline: none;
+  box-shadow: none;
 }
 
 .nav-button:hover {
@@ -169,6 +185,23 @@
 }
 
 /* Responsive styles */
+@media (min-width: 1024px) {
+  .flashcard {
+    height: 320px;
+    max-width: 550px;
+  }
+  
+  .flashcard h2 {
+    font-size: 2.2rem;
+  }
+  
+  .audio-button {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.5rem;
+  }
+}
+
 @media (max-width: 480px) {
   .flashcard {
     height: 250px;

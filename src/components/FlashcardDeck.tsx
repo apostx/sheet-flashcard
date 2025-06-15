@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Flashcard from './Flashcard';
 import { Flashcard as FlashcardType } from '../types/Flashcard';
 import '../styles/FlashcardDeck.css';
@@ -9,9 +9,29 @@ interface FlashcardDeckProps {
 
 const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [shuffleMode, setShuffleMode] = useState(false);
+  const [shuffleMode, setShuffleMode] = useState(true);
   const [shuffledIndices, setShuffledIndices] = useState<number[]>([]);
   const [reversed, setReversed] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
+  
+  // Generate the actual deck, respecting repetition counts
+  const actualDeck = useMemo(() => {
+    const deck: FlashcardType[] = [];
+    
+    flashcards.forEach(card => {
+      const count = card.repetitionCount !== undefined ? card.repetitionCount : 1;
+      
+      // Only add cards with repetition count > 0
+      if (count > 0) {
+        // Add the card the specified number of times
+        for (let i = 0; i < count; i++) {
+          deck.push(card);
+        }
+      }
+    });
+    
+    return deck;
+  }, [flashcards]);
   
   // Extract language information from the first card if available
   const sourceLanguage = flashcards.length > 0 && flashcards[0].sourceLanguage 
@@ -21,13 +41,31 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
     ? flashcards[0].targetLanguage 
     : 'Target';
 
+  // Function to generate shuffled indices
+  const generateShuffledIndices = () => {
+    // Generate shuffled indices
+    const indices = Array.from({ length: actualDeck.length }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    setShuffledIndices(indices);
+  };
+
   // Reset card index when flashcards change
   useEffect(() => {
     setCurrentCardIndex(0);
     if (shuffleMode) {
       generateShuffledIndices();
     }
-  }, [flashcards]);
+  }, [actualDeck, shuffleMode]);
+
+  // Initialize shuffle on component mount
+  useEffect(() => {
+    if (shuffleMode && actualDeck.length > 0) {
+      generateShuffledIndices();
+    }
+  }, [shuffleMode, actualDeck.length]);
 
   // Get the actual index based on whether we're in shuffle mode
   const getActualIndex = () => {
@@ -37,29 +75,54 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
     return currentCardIndex;
   };
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     setCurrentCardIndex((prevIndex) => {
-      const maxIndex = shuffleMode ? shuffledIndices.length - 1 : flashcards.length - 1;
+      const maxIndex = shuffleMode ? shuffledIndices.length - 1 : actualDeck.length - 1;
       return prevIndex >= maxIndex ? 0 : prevIndex + 1;
     });
-  };
+    setIsFlipped(false); // Reset flip state when changing cards
+  }, [shuffleMode, shuffledIndices.length, actualDeck.length]);
 
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     setCurrentCardIndex((prevIndex) => {
-      const maxIndex = shuffleMode ? shuffledIndices.length - 1 : flashcards.length - 1;
+      const maxIndex = shuffleMode ? shuffledIndices.length - 1 : actualDeck.length - 1;
       return prevIndex <= 0 ? maxIndex : prevIndex - 1;
     });
-  };
+    setIsFlipped(false); // Reset flip state when changing cards
+  }, [shuffleMode, shuffledIndices.length, actualDeck.length]);
 
-  const generateShuffledIndices = () => {
-    // Generate shuffled indices
-    const indices = Array.from({ length: flashcards.length }, (_, i) => i);
-    for (let i = indices.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [indices[i], indices[j]] = [indices[j], indices[i]];
-    }
-    setShuffledIndices(indices);
-  };
+  const handleFlip = useCallback(() => {
+    setIsFlipped(prev => !prev);
+  }, []);
+  
+  // Add keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case 'ArrowLeft':
+          handlePrevious();
+          break;
+        case 'ArrowRight':
+          handleNext();
+          break;
+        case 'ArrowUp':
+        case 'ArrowDown':
+        case ' ': // Space
+          handleFlip();
+          e.preventDefault(); // Prevent page scrolling on space key
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    
+    // Clean up event listener on component unmount
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleNext, handlePrevious, handleFlip]);
   
   const toggleShuffleMode = () => {
     if (!shuffleMode) {
@@ -76,12 +139,12 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
     setReversed(!reversed);
   };
 
-  if (!flashcards || flashcards.length === 0) {
+  if (!actualDeck || actualDeck.length === 0) {
     return <div className="no-cards">No flashcards available.</div>;
   }
 
   const actualIndex = getActualIndex();
-  const currentCard = flashcards[actualIndex];
+  const currentCard = actualDeck[actualIndex];
   
   if (!currentCard) {
     return <div className="error-card">Error: Card data is invalid.</div>;
@@ -97,7 +160,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
             title={shuffleMode ? "Switch to ordered mode" : "Switch to shuffle mode"}
             aria-label={shuffleMode ? "Switch to ordered mode" : "Switch to shuffle mode"}
           >
-            {shuffleMode ? '🔢 Ordered' : '🔀 Shuffle'}
+            {shuffleMode ? '🔀 Shuffle' : '🔢 Ordered'}
           </button>
           
           <button 
@@ -111,7 +174,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
         </div>
         
         <div className="deck-info">
-          Card {currentCardIndex + 1} of {shuffleMode ? shuffledIndices.length : flashcards.length}
+          Card {currentCardIndex + 1} of {shuffleMode ? shuffledIndices.length : actualDeck.length}
         </div>
       </div>
       
@@ -120,6 +183,8 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
         onNext={handleNext}
         onPrevious={handlePrevious}
         reversed={reversed}
+        isFlipped={isFlipped}
+        onFlip={handleFlip}
       />
     </div>
   );

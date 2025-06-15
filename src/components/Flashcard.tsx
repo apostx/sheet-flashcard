@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Flashcard as FlashcardType } from '../types/Flashcard';
 import { useAudio } from '../hooks/useAudio';
 import '../styles/Flashcard.css';
@@ -8,11 +8,24 @@ interface FlashcardProps {
   onNext: () => void;
   onPrevious: () => void;
   reversed?: boolean;
+  isFlipped?: boolean;
+  onFlip?: () => void;
 }
 
-const Flashcard: React.FC<FlashcardProps> = ({ card, onNext, onPrevious, reversed = false }) => {
-  const [isFlipped, setIsFlipped] = useState(false);
+const Flashcard: React.FC<FlashcardProps> = ({ 
+  card, 
+  onNext, 
+  onPrevious, 
+  reversed = false,
+  isFlipped: externalIsFlipped,
+  onFlip: externalOnFlip
+}) => {
+  const [internalIsFlipped, setInternalIsFlipped] = useState(false);
   const { playAudio, isPlaying, error } = useAudio();
+  
+  // Determine if controlled externally or internally
+  const isControlledExternally = externalIsFlipped !== undefined && externalOnFlip !== undefined;
+  const isFlipped = isControlledExternally ? externalIsFlipped : internalIsFlipped;
 
   if (!card || !card.sourceWord || !card.targetTranslation) {
     return (
@@ -27,7 +40,11 @@ const Flashcard: React.FC<FlashcardProps> = ({ card, onNext, onPrevious, reverse
   }
 
   const handleFlip = () => {
-    setIsFlipped(!isFlipped);
+    if (isControlledExternally) {
+      externalOnFlip?.();
+    } else {
+      setInternalIsFlipped(!internalIsFlipped);
+    }
   };
 
   const playSourceAudio = (e: React.MouseEvent) => {

@@ -3,8 +3,9 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 600px;
+  max-width: 800px; /* Increased from 600px for better desktop experience */
   margin: 0 auto;
+  padding: 0 1rem;
 }
 
 .deck-controls {
@@ -37,6 +38,15 @@
   align-items: center;
   gap: 0.5rem;
   font-weight: 500;
+  /* Remove ALL focus styling */
+  outline: none;
+}
+
+/* Remove ALL focus indicators */
+.control-button:focus {
+  outline: none;
+  box-shadow: none;
+  border-color: var(--card-border);
 }
 
 .control-button:hover {
@@ -45,9 +55,33 @@
 }
 
 .control-button.active {
-  background-color: var(--button-bg);
-  color: var(--button-text);
-  border-color: var(--button-bg);
+  background-color: var(--button-bg) !important; /* Use !important to override any focus styles */
+  color: var(--button-text) !important;
+  border-color: var(--button-bg) !important;
+}
+
+/* Explicitly reset focus state for all button states */
+.control-button:focus,
+.control-button.active:focus,
+.control-button:active:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+}
+
+/* Force the active control button to maintain its styling regardless of focus */
+.control-button.active {
+  background-color: var(--button-bg) !important;
+  color: var(--button-text) !important;
+  border-color: var(--button-bg) !important;
+}
+
+/* Force non-active buttons to maintain their styling in all states */
+.control-button:not(.active):focus {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border: var(--card-border) !important;
 }
 
 .deck-info {
@@ -75,10 +109,46 @@
   color: #c62828;
 }
 
-/* Responsive adjustments */
+.keyboard-controls-info {
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-color-secondary, #666);
+  background-color: rgba(var(--button-bg-rgb, 100, 100, 100), 0.1);
+  padding: 0.6rem 1rem;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.keyboard-controls-info p {
+  margin: 0;
+}
+
+.space-key {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin: 0 0.2rem;
+  font-size: 0.8rem;
+  vertical-align: middle;
+}
+
+/* Keep deck controls in column layout even on desktop */
 @media (min-width: 768px) {
   .deck-controls {
-    flex-direction: row;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .control-button {
+    padding: 0.7rem 1.2rem;
+    font-size: 1rem;
+  }
+  
+  .deck-info {
+    font-size: 1rem;
+    margin-top: 0.5rem;
   }
 }
 

@@ -65,8 +65,14 @@ The compiled files will be placed in the `dist` directory.
 - Use the "Next" and "Previous" buttons to navigate between cards
 - Audio buttons (🔊) play pronunciation when available
 
+### Keyboard Controls
+- ◀️ and ▶️ (Left/right arrow keys): Navigate between cards
+- ▲, ▼, Space (Up/down arrow keys or spacebar): Flip the current card
+
 ### Advanced Features
-- Click the "🔀 Shuffle" button to randomize the order of cards
+- Cards appear according to their repetition count from the spreadsheet
+- Shuffle mode is enabled by default to randomize card order
+- Click the "🔀 Shuffle" button to switch between shuffle and ordered modes
 - Click the "🔄 Source → Target" button to switch language direction
 - Click the theme toggle button in the top right corner to switch between dark and light modes
 
@@ -80,6 +86,11 @@ The application fetches data from a Google Spreadsheet with the following struct
    - Column 2: URL to source language pronunciation audio (optional)
    - Column 3: Target language translation (required)
    - Column 4: URL to target language pronunciation audio (optional)
+   - Column 5: Repetition count (optional, default: 1)
+     - Specifies how many times the card appears in the deck
+     - Value of 0 excludes the card from the deck
+     - No value or empty cell defaults to 1
+     - Only numeric values are considered valid
 
 ### Custom Data Source
 

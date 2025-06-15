@@ -192,6 +192,16 @@ export const fetchFlashcardData = async (): Promise<Flashcard[]> => {
                 return;
             }
 
+            // Parse repetition count from 5th column if available
+            let repetitionCount: number | undefined = 1; // Default to 1 if not specified
+            if (columns.length >= 5 && columns[4].trim() !== '') {
+                const repCount = parseInt(columns[4].trim(), 10);
+                // Only use the value if it's a valid number
+                if (!isNaN(repCount)) {
+                    repetitionCount = repCount;
+                }
+            }
+
             parsedCards.push({
                 id: index,
                 sourceWord: columns[0].trim(),
@@ -200,7 +210,8 @@ export const fetchFlashcardData = async (): Promise<Flashcard[]> => {
                 targetTranslation: targetTranslation,
                 targetSoundUrl: columns.length >= 4 ? columns[3].trim() : undefined,
                 sourceLanguage: sourceLanguage,
-                targetLanguage: targetLanguage
+                targetLanguage: targetLanguage,
+                repetitionCount: repetitionCount
             });
         });
         
