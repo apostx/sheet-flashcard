@@ -7,13 +7,6 @@
   cursor: pointer;
 }
 
-/* Remove focus outline while keeping keyboard accessibility */
-.flashcard:focus {
-  outline: none;
-  /* Subtle indication that focus is received without visible outline */
-  box-shadow: 0 0 0 2px transparent;
-}
-
 .flashcard-inner {
   position: relative;
   width: 100%;
@@ -23,10 +16,6 @@
   transform-style: preserve-3d;
   box-shadow: var(--card-shadow);
   border-radius: 10px;
-}
-
-.flashcard:focus .flashcard-inner {
-  box-shadow: 0 4px 12px 0 rgba(0,0,0,0.3);
 }
 
 .flashcard.flipped .flashcard-inner {
@@ -100,14 +89,7 @@
   min-width: 40px;
   min-height: 40px;
   margin-top: 0.5rem;
-  /* Remove ALL focus styling */
   outline: none;
-}
-
-.audio-button:focus {
-  /* No focus styling at all */
-  outline: none;
-  box-shadow: none;
 }
 
 .audio-button:hover {
@@ -134,14 +116,7 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
-  /* Remove ALL focus styling */
   outline: none;
-}
-
-.nav-button:focus {
-  /* No focus styling at all */
-  outline: none;
-  box-shadow: none;
 }
 
 .nav-button:hover {

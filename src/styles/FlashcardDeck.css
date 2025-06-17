@@ -38,15 +38,7 @@
   align-items: center;
   gap: 0.5rem;
   font-weight: 500;
-  /* Remove ALL focus styling */
   outline: none;
-}
-
-/* Remove ALL focus indicators */
-.control-button:focus {
-  outline: none;
-  box-shadow: none;
-  border-color: var(--card-border);
 }
 
 .control-button:hover {
@@ -55,33 +47,9 @@
 }
 
 .control-button.active {
-  background-color: var(--button-bg) !important; /* Use !important to override any focus styles */
-  color: var(--button-text) !important;
-  border-color: var(--button-bg) !important;
-}
-
-/* Explicitly reset focus state for all button states */
-.control-button:focus,
-.control-button.active:focus,
-.control-button:active:focus {
-  outline: none !important;
-  box-shadow: none !important;
-  -webkit-box-shadow: none !important;
-  -moz-box-shadow: none !important;
-}
-
-/* Force the active control button to maintain its styling regardless of focus */
-.control-button.active {
   background-color: var(--button-bg) !important;
   color: var(--button-text) !important;
   border-color: var(--button-bg) !important;
-}
-
-/* Force non-active buttons to maintain their styling in all states */
-.control-button:not(.active):focus {
-  background-color: var(--card-bg) !important;
-  color: var(--text-color) !important;
-  border: var(--card-border) !important;
 }
 
 .deck-info {

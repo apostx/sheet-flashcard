@@ -6,6 +6,23 @@ All notable changes to the Language Flashcard project will be documented in this
 
 This project was developed with the assistance of Claude 3.7 (developed by Anthropic) in June 2025.
 
+## [2.6.1] - 2025-06-18
+
+### Fixed
+- **Complete Focus Styling Elimination**: Completely removed all focus-related visual effects
+  - ❌ Eliminated invisible buttons on focus state
+  - ❌ Removed unwanted borders appearing on button focus
+  - ❌ Disabled all focus outlines and visual indicators
+  - ✅ Maintained hover effects even when buttons are focused
+  - ✅ Preserved proper button styling for both normal and active states
+  - ✅ Ensured consistent button appearance across all interaction states
+
+### Technical
+- Comprehensive CSS focus rule elimination across all stylesheets
+- Added explicit focus+hover combination rules to maintain hover effects
+- Used CSS variable-based styling to ensure consistent button appearance
+- Implemented failsafe rules with `!important` declarations to override browser defaults
+
 ## [2.6.0] - 2025-06-16
 
 ### Added

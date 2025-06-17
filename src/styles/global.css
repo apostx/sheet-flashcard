@@ -1,16 +1,62 @@
-/* Reset and base styles */
-*, *::before, *::after {
-  box-sizing: border-box;
+/* Complete focus elimination - maintain original styles */
+*:focus,
+*:focus-visible,
+*:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
-/* Global focus styles - completely remove focus indicators */
+/* Specifically prevent any focus changes on buttons */
 button:focus,
+input:focus,
+textarea:focus,
+select:focus,
+a:focus,
 [role="button"]:focus {
   outline: none !important;
   box-shadow: none !important;
-  border-color: inherit !important;
-  background-color: inherit !important;
-  color: inherit !important;
+}
+
+/* Ensure control buttons maintain their exact styling on focus */
+.control-button:focus {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border: var(--card-border) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Allow hover effects even when focused */
+.control-button:focus:hover {
+  background-color: rgba(var(--button-bg-rgb), 0.15) !important;
+  border-color: var(--button-bg) !important;
+}
+
+.control-button.active:focus {
+  background-color: var(--button-bg) !important;
+  color: var(--button-text) !important;
+  border-color: var(--button-bg) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Active buttons should maintain their styling even when focused and hovered */
+.control-button.active:focus:hover {
+  background-color: var(--button-hover-bg) !important;
+  color: var(--button-text) !important;
+  border-color: var(--button-hover-bg) !important;
+}
+
+/* Ensure other buttons maintain their styling */
+.nav-button:focus,
+.audio-button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Reset and base styles */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 :root {
@@ -93,15 +139,6 @@ button {
   font-family: inherit;
   border: none;
   outline: none;
-}
-
-button:focus {
-  outline: 2px solid rgba(52, 152, 219, 0.5);
-}
-
-/* Accessibility improvements */
-:focus {
-  outline: 2px solid rgba(52, 152, 219, 0.5);
 }
 
 /* Transition for all buttons */
