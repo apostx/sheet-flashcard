@@ -170,8 +170,6 @@ The AI was used to:
 
 Human oversight and direction were provided throughout the development process to ensure the application meets quality standards and follows best practices.
 
-For a detailed history of the development process and the evolution of features, see the [HISTORY.md](./HISTORY.md) file.
-
 ## License
 
 MIT
