@@ -9,6 +9,8 @@ interface FlashcardProps {
   reversed?: boolean;
   isFlipped?: boolean;
   onFlip?: () => void;
+  isAnimatingBack?: boolean; // For smooth flip-back animation
+  onAnimationEnd?: () => void;
 }
 
 const Flashcard: React.FC<FlashcardProps> = ({
@@ -17,7 +19,9 @@ const Flashcard: React.FC<FlashcardProps> = ({
   onPrevious,
   reversed = false,
   isFlipped: externalIsFlipped,
-  onFlip: externalOnFlip
+  onFlip: externalOnFlip,
+  isAnimatingBack = false,
+  onAnimationEnd
 }) => {
   const [internalIsFlipped, setInternalIsFlipped] = useState(false);
   const { playAudio, isPlaying, error } = useAudio();
@@ -108,10 +112,17 @@ const Flashcard: React.FC<FlashcardProps> = ({
       aria-label="Flashcard, click to flip"
     >
       <div
-        className="relative w-full h-full text-center preserve-3d transition-transform duration-500 rounded-xl"
+        className={`relative w-full h-full text-center preserve-3d rounded-xl ${
+          isAnimatingBack ? 'animate-flip-back' : 'transition-transform duration-500'
+        }`}
         style={{
           boxShadow: 'var(--card-shadow)',
-          transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+          transform: isAnimatingBack ? undefined : (isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)')
+        }}
+        onAnimationEnd={(e) => {
+          if (e.target === e.currentTarget) {
+            onAnimationEnd?.();
+          }
         }}
       >
         <div

@@ -7,35 +7,54 @@ interface FlashcardDeckProps {
   flashcards: FlashcardType[];
 }
 
+// Helper to generate shuffled indices synchronously
+const createShuffledIndices = (length: number): number[] => {
+  const indices = Array.from({ length }, (_, i) => i);
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+  return indices;
+};
+
+// Midpoint of the 400ms flip-back animation (when card is edge-on)
+const ANIMATION_MIDPOINT = 200;
+
+// Helper to build the actual deck with repetitions
+const buildActualDeck = (flashcards: FlashcardType[]): FlashcardType[] => {
+  const deck: FlashcardType[] = [];
+  flashcards.forEach(card => {
+    const count = card.repetitionCount !== undefined ? card.repetitionCount : 1;
+    if (count > 0) {
+      for (let i = 0; i < count; i++) {
+        deck.push(card);
+      }
+    }
+  });
+  return deck;
+};
+
 const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
+  // Compute actual deck synchronously for proper initialization
+  const actualDeck = useMemo(() => buildActualDeck(flashcards), [flashcards]);
+
+  // Initialize shuffled indices synchronously with correct deck length
+  const [shuffledIndices, setShuffledIndices] = useState<number[]>(() =>
+    createShuffledIndices(buildActualDeck(flashcards).length || 1)
+  );
+
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [shuffleMode, setShuffleMode] = useState(true);
-  const [shuffledIndices, setShuffledIndices] = useState<number[]>([]);
   const [reversed, setReversed] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isAnimatingBack, setIsAnimatingBack] = useState(false);
+  const pendingNavigation = useRef<'next' | 'prev' | null>(null);
+  const midpointTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [autoplay, setAutoplay] = useState(false);
   const [autoplayTimings, setAutoplayTimings] = useState<AutoplayTimings>(() => parseAutoplayTimings());
   const [showTimingControls, setShowTimingControls] = useState(false);
   const autoplayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Generate the actual deck, respecting repetition counts
-  const actualDeck = useMemo(() => {
-    const deck: FlashcardType[] = [];
-
-    flashcards.forEach(card => {
-      const count = card.repetitionCount !== undefined ? card.repetitionCount : 1;
-
-      // Only add cards with repetition count > 0
-      if (count > 0) {
-        // Add the card the specified number of times
-        for (let i = 0; i < count; i++) {
-          deck.push(card);
-        }
-      }
-    });
-
-    return deck;
-  }, [flashcards]);
+  const initialDeckLengthRef = useRef(actualDeck.length);
 
   // Extract label information from the first card if available
   const frontLabel = flashcards.length > 0 && flashcards[0].frontLabel
@@ -47,30 +66,38 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
 
   // Function to generate shuffled indices
   const generateShuffledIndices = () => {
-    // Generate shuffled indices
-    const indices = Array.from({ length: actualDeck.length }, (_, i) => i);
-    for (let i = indices.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [indices[i], indices[j]] = [indices[j], indices[i]];
-    }
-    setShuffledIndices(indices);
+    setShuffledIndices(createShuffledIndices(actualDeck.length));
   };
 
-  // Reset card index when flashcards change
+  // Clear midpoint timer
+  const clearMidpointTimer = useCallback(() => {
+    if (midpointTimerRef.current) {
+      clearTimeout(midpointTimerRef.current);
+      midpointTimerRef.current = null;
+    }
+  }, []);
+
+  // Handle animation end - cleanup after flip-back animation completes
+  const handleAnimationEnd = useCallback(() => {
+    setIsAnimatingBack(false);
+    setIsFlipped(false);
+    pendingNavigation.current = null;
+  }, []);
+
+  // Reset card index when flashcards change (skip initial mount if deck length matches)
   useEffect(() => {
+    // Skip if this is the initial render with same deck length (already initialized)
+    if (actualDeck.length === initialDeckLengthRef.current && shuffledIndices.length === actualDeck.length) {
+      return;
+    }
+
     setCurrentCardIndex(0);
     setAutoplay(false); // Stop autoplay when flashcards change
     if (shuffleMode) {
       generateShuffledIndices();
     }
-  }, [actualDeck, shuffleMode]);
-
-  // Initialize shuffle on component mount
-  useEffect(() => {
-    if (shuffleMode && actualDeck.length > 0) {
-      generateShuffledIndices();
-    }
-  }, [shuffleMode, actualDeck.length]);
+    initialDeckLengthRef.current = actualDeck.length;
+  }, [actualDeck.length, shuffleMode]);
 
   // Get the actual index based on whether we're in shuffle mode
   const getActualIndex = () => {
@@ -142,22 +169,52 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
   }, [autoplay, startAutoplayTimer, clearAutoplayTimer]);
 
   const handleNext = useCallback(() => {
-    clearAutoplayTimer(); // Reset timer when manually changing cards
-    setCurrentCardIndex((prevIndex) => {
-      const maxIndex = shuffleMode ? shuffledIndices.length - 1 : actualDeck.length - 1;
-      return prevIndex >= maxIndex ? 0 : prevIndex + 1;
-    });
-    setIsFlipped(false); // Reset flip state when changing cards
-  }, [shuffleMode, shuffledIndices.length, actualDeck.length, clearAutoplayTimer]);
+    if (isAnimatingBack) return; // Prevent navigation during animation
+    clearAutoplayTimer();
+    clearMidpointTimer();
+
+    if (isFlipped) {
+      // Start CSS animation and swap content at midpoint
+      pendingNavigation.current = 'next';
+      setIsAnimatingBack(true);
+      midpointTimerRef.current = setTimeout(() => {
+        setCurrentCardIndex((prevIndex) => {
+          const maxIndex = shuffleMode ? shuffledIndices.length - 1 : actualDeck.length - 1;
+          return prevIndex >= maxIndex ? 0 : prevIndex + 1;
+        });
+      }, ANIMATION_MIDPOINT);
+    } else {
+      // Not flipped, just change card immediately
+      setCurrentCardIndex((prevIndex) => {
+        const maxIndex = shuffleMode ? shuffledIndices.length - 1 : actualDeck.length - 1;
+        return prevIndex >= maxIndex ? 0 : prevIndex + 1;
+      });
+    }
+  }, [shuffleMode, shuffledIndices.length, actualDeck.length, clearAutoplayTimer, clearMidpointTimer, isFlipped, isAnimatingBack]);
 
   const handlePrevious = useCallback(() => {
-    clearAutoplayTimer(); // Reset timer when manually changing cards
-    setCurrentCardIndex((prevIndex) => {
-      const maxIndex = shuffleMode ? shuffledIndices.length - 1 : actualDeck.length - 1;
-      return prevIndex <= 0 ? maxIndex : prevIndex - 1;
-    });
-    setIsFlipped(false); // Reset flip state when changing cards
-  }, [shuffleMode, shuffledIndices.length, actualDeck.length, clearAutoplayTimer]);
+    if (isAnimatingBack) return; // Prevent navigation during animation
+    clearAutoplayTimer();
+    clearMidpointTimer();
+
+    if (isFlipped) {
+      // Start CSS animation and swap content at midpoint
+      pendingNavigation.current = 'prev';
+      setIsAnimatingBack(true);
+      midpointTimerRef.current = setTimeout(() => {
+        setCurrentCardIndex((prevIndex) => {
+          const maxIndex = shuffleMode ? shuffledIndices.length - 1 : actualDeck.length - 1;
+          return prevIndex <= 0 ? maxIndex : prevIndex - 1;
+        });
+      }, ANIMATION_MIDPOINT);
+    } else {
+      // Not flipped, just change card immediately
+      setCurrentCardIndex((prevIndex) => {
+        const maxIndex = shuffleMode ? shuffledIndices.length - 1 : actualDeck.length - 1;
+        return prevIndex <= 0 ? maxIndex : prevIndex - 1;
+      });
+    }
+  }, [shuffleMode, shuffledIndices.length, actualDeck.length, clearAutoplayTimer, clearMidpointTimer, isFlipped, isAnimatingBack]);
 
   const handleFlip = useCallback(() => {
     clearAutoplayTimer(); // Reset timer when manually flipping
@@ -193,12 +250,13 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
     };
   }, [handleNext, handlePrevious, handleFlip]);
 
-  // Cleanup autoplay timer on component unmount
+  // Cleanup timers on component unmount
   useEffect(() => {
     return () => {
       clearAutoplayTimer();
+      clearMidpointTimer();
     };
-  }, [clearAutoplayTimer]);
+  }, [clearAutoplayTimer, clearMidpointTimer]);
 
   const toggleShuffleMode = () => {
     if (!shuffleMode) {
@@ -370,6 +428,8 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
         reversed={reversed}
         isFlipped={isFlipped}
         onFlip={handleFlip}
+        isAnimatingBack={isAnimatingBack}
+        onAnimationEnd={handleAnimationEnd}
       />
     </div>
   );
