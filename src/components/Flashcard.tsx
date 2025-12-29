@@ -85,9 +85,10 @@ const Flashcard: React.FC<FlashcardProps> = ({
         {card.tags.map((tag, index) => (
           <span
             key={index}
-            className="px-4 py-1.5 text-sm rounded-full transition-colors cursor-pointer border"
+            className="px-4 py-1.5 text-sm rounded-full transition-colors cursor-pointer border outline-none focus:ring-2 focus:ring-offset-1"
             style={{ backgroundColor: 'var(--tag-bg)', color: 'var(--tag-text)', borderColor: 'var(--tag-border)' }}
             data-tooltip={tag.description}
+            tabIndex={0}
           >
             #{tag.label}
           </span>

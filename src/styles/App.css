@@ -86,7 +86,7 @@ body {
   animation: flip-back-to-front 400ms ease-in-out forwards;
 }
 
-/* Instant tooltip - no delay */
+/* Instant tooltip - works on desktop (hover) and mobile (tap/focus) */
 [data-tooltip] {
   position: relative;
 }
@@ -111,7 +111,19 @@ body {
   z-index: 10;
 }
 
-[data-tooltip]:hover::after {
-  opacity: 1;
-  visibility: visible;
+/* Desktop: show on hover */
+@media (hover: hover) {
+  [data-tooltip]:hover::after {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* Mobile: show on focus (tap) */
+@media (hover: none) {
+  [data-tooltip]:focus::after,
+  [data-tooltip]:active::after {
+    opacity: 1;
+    visibility: visible;
+  }
 }
