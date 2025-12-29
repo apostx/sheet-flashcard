@@ -337,40 +337,40 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
             onClick={toggleShuffleMode}
             className={`${controlButtonBase} ${shuffleMode ? controlButtonActive : controlButtonInactive}`}
             style={!shuffleMode ? { backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' } : undefined}
-            title={shuffleMode ? "Switch to ordered mode" : "Switch to shuffle mode"}
+            data-tooltip={shuffleMode ? "Switch to ordered mode" : "Switch to shuffle mode"}
             aria-label={shuffleMode ? "Switch to ordered mode" : "Switch to shuffle mode"}
           >
-            {shuffleMode ? '🔀 Shuffle' : '🔢 Ordered'}
+            {shuffleMode ? 'Shuffle' : 'Ordered'}
           </button>
 
           <button
             onClick={toggleDirection}
             className={`${controlButtonBase} ${reversed ? controlButtonActive : controlButtonInactive}`}
             style={!reversed ? { backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' } : undefined}
-            title={reversed ? `Show ${backLabel} → ${frontLabel}` : `Show ${frontLabel} → ${backLabel}`}
+            data-tooltip={reversed ? `Show ${backLabel} → ${frontLabel}` : `Show ${frontLabel} → ${backLabel}`}
             aria-label={reversed ? `Switch to ${frontLabel} first` : `Switch to ${backLabel} first`}
           >
-            {reversed ? `🔄 ${backLabel} → ${frontLabel}` : `🔄 ${frontLabel} → ${backLabel}`}
+            {reversed ? `${backLabel} → ${frontLabel}` : `${frontLabel} → ${backLabel}`}
           </button>
 
           <button
             onClick={toggleAutoplay}
             className={`${controlButtonBase} ${autoplay ? controlButtonActive : controlButtonInactive}`}
             style={!autoplay ? { backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' } : undefined}
-            title={autoplay ? "Stop autoplay" : "Start autoplay"}
+            data-tooltip={autoplay ? "Stop autoplay" : "Start autoplay"}
             aria-label={autoplay ? "Stop autoplay" : "Start autoplay"}
           >
-            {autoplay ? '⏸️ Autoplay' : '▶️ Autoplay'}
+            {autoplay ? 'Pause' : 'Play'}
           </button>
 
           <button
             onClick={() => setShowTimingControls(!showTimingControls)}
             className={`${controlButtonBase} ${showTimingControls ? controlButtonActive : controlButtonInactive}`}
             style={!showTimingControls ? { backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' } : undefined}
-            title="Autoplay timing settings"
+            data-tooltip="Autoplay timing settings"
             aria-label="Autoplay timing settings"
           >
-            ⏱️ Timing
+            Timing
           </button>
         </div>
 

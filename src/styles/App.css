@@ -1,35 +1,46 @@
 @import "tailwindcss";
 
-/* Theme CSS Variables */
+/* Configure Tailwind dark mode to use data-theme attribute */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Onyx Elegant Theme */
 :root {
-  --bg-color: #f5f7fa;
-  --text-color: #333;
-  --button-bg: #3498db;
-  --button-text: #ffffff;
+  --card-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
   --card-bg: #ffffff;
-  --card-border: 1px solid #e0e0e0;
-  --card-border-color: #e0e0e0;
-  --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  --error-color: #c62828;
-  --error-bg: #ffebee;
-  --button-bg-rgb: 52, 152, 219;
+  --card-bg-back: #f8f8f8;
+  --card-border-color: #1a1a1a;
+  --card-text: #1f2937;
+  --text-color: #1f2937;
+  --tag-bg: rgba(0, 0, 0, 0.1);
+  --tag-text: #4b5563;
+  --tag-border: rgba(0, 0, 0, 0.2);
+  --btn-bg: #1a1a1a;
+  --btn-hover: #333333;
+  --button-bg: #1a1a1a;
+  --button-text: #ffffff;
+  --audio-btn-bg: rgba(0, 0, 0, 0.1);
+  --audio-btn-hover: rgba(0, 0, 0, 0.2);
 }
 
 [data-theme='dark'] {
-  --bg-color: #1a1a2e;
-  --text-color: #e0e0e0;
-  --button-bg: #3498db;
+  --card-shadow: 0 8px 40px rgba(255, 255, 255, 0.03);
+  --card-bg: #0f0f0f;
+  --card-bg-back: #121212;
+  --card-border-color: #2a2a2a;
+  --card-text: #f3f4f6;
+  --text-color: #f3f4f6;
+  --tag-bg: rgba(255, 255, 255, 0.1);
+  --tag-text: #9ca3af;
+  --tag-border: rgba(255, 255, 255, 0.2);
+  --btn-bg: #2a2a2a;
+  --btn-hover: #3a3a3a;
+  --button-bg: #2a2a2a;
   --button-text: #ffffff;
-  --card-bg: #16213e;
-  --card-border: 1px solid #0f3460;
-  --card-border-color: #0f3460;
-  --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  --error-color: #ef5350;
-  --error-bg: #4a1a1a;
-  --button-bg-rgb: 52, 152, 219;
+  --audio-btn-bg: rgba(255, 255, 255, 0.1);
+  --audio-btn-hover: rgba(255, 255, 255, 0.2);
 }
 
-/* Base styles */
+/* Base styles - Onyx theme */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -37,9 +48,14 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  background-color: #f0f0f0;
+  color: #1f2937;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-theme='dark'] body {
+  background-color: #050505;
+  color: #f3f4f6;
 }
 
 /* Custom utilities for 3D card flip */
@@ -68,4 +84,34 @@ body {
 
 .animate-flip-back {
   animation: flip-back-to-front 400ms ease-in-out forwards;
+}
+
+/* Instant tooltip - no delay */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  background: var(--btn-bg);
+  color: var(--button-text);
+  font-size: 12px;
+  white-space: nowrap;
+  border-radius: 4px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s, visibility 0.15s;
+  pointer-events: none;
+  margin-bottom: 6px;
+  z-index: 10;
+}
+
+[data-tooltip]:hover::after {
+  opacity: 1;
+  visibility: visible;
 }

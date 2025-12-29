@@ -9,7 +9,7 @@ interface FlashcardProps {
   reversed?: boolean;
   isFlipped?: boolean;
   onFlip?: () => void;
-  isAnimatingBack?: boolean; // For smooth flip-back animation
+  isAnimatingBack?: boolean;
   onAnimationEnd?: () => void;
 }
 
@@ -31,10 +31,10 @@ const Flashcard: React.FC<FlashcardProps> = ({
 
   if (!card || !card.front || !card.back) {
     return (
-      <div className="w-full max-w-lg h-[300px] sm:h-[200px] perspective-1000 my-8 mx-auto cursor-pointer">
+      <div className="w-full max-w-2xl h-[400px] sm:h-[280px] perspective-1000 my-8 mx-auto cursor-pointer">
         <div className="relative w-full h-full text-center preserve-3d rounded-xl" style={{ boxShadow: 'var(--card-shadow)' }}>
-          <div className="absolute w-full h-full backface-hidden flex flex-col justify-center items-center rounded-xl p-6 overflow-hidden" style={{ backgroundColor: 'var(--button-bg)', color: 'var(--button-text)' }}>
-            <h2 className="text-2xl">Invalid Card Data</h2>
+          <div className="absolute w-full h-full backface-hidden flex flex-col justify-center items-center rounded-xl p-8 border" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border-color)' }}>
+            <h2 className="text-2xl" style={{ color: 'var(--card-text)' }}>Invalid Card Data</h2>
           </div>
         </div>
       </div>
@@ -65,12 +65,15 @@ const Flashcard: React.FC<FlashcardProps> = ({
 
   const AudioButton = ({ onClick, disabled, label }: { onClick: (e: React.MouseEvent) => void; disabled: boolean; label: string }) => (
     <button
-      className="p-2 bg-white/20 rounded mt-2 text-xl text-white flex items-center justify-center min-w-10 min-h-10 transition-colors hover:bg-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
+      className="p-2 rounded mt-2 flex items-center justify-center min-w-10 min-h-10 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+      style={{ backgroundColor: 'var(--audio-btn-bg)', color: 'var(--card-text)' }}
       onClick={onClick}
       disabled={disabled}
       aria-label={label}
     >
-      🔊
+      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+      </svg>
     </button>
   );
 
@@ -78,12 +81,13 @@ const Flashcard: React.FC<FlashcardProps> = ({
     if (!card.tags || card.tags.length === 0) return null;
 
     return (
-      <div className="flex flex-wrap gap-1.5 mt-3 justify-center" onClick={(e) => e.stopPropagation()}>
+      <div className="flex flex-wrap gap-2 mt-4 justify-center" onClick={(e) => e.stopPropagation()}>
         {card.tags.map((tag, index) => (
           <span
             key={index}
-            className="px-2 py-0.5 text-xs rounded-full bg-white/25 hover:bg-white/40 transition-colors cursor-default"
-            title={tag.description}
+            className="px-4 py-1.5 text-sm rounded-full transition-colors cursor-pointer border"
+            style={{ backgroundColor: 'var(--tag-bg)', color: 'var(--tag-text)', borderColor: 'var(--tag-border)' }}
+            data-tooltip={tag.description}
           >
             #{tag.label}
           </span>
@@ -92,29 +96,27 @@ const Flashcard: React.FC<FlashcardProps> = ({
     );
   };
 
-  // When reversed: front shows back content, back shows front content
-  // Tags always appear on the "back" side of the card (green side)
   const frontContent = reversed ? (
     <div className="flex flex-col items-center justify-center w-full h-full text-center overflow-hidden">
-      <h2 className="text-2xl lg:text-3xl sm:text-xl mb-2 w-full break-words overflow-y-auto max-h-36 leading-snug">{card.back}</h2>
+      <h2 className="text-3xl lg:text-4xl sm:text-2xl mb-2 w-full break-words overflow-y-auto max-h-44 leading-snug">{card.back}</h2>
       {card.backAudioUrl && <AudioButton onClick={playBackAudio} disabled={isPlaying} label={`Play ${card.backLabel || 'back'} audio`} />}
       <TagsDisplay />
     </div>
   ) : (
     <div className="flex flex-col items-center justify-center w-full h-full text-center overflow-hidden">
-      <h2 className="text-2xl lg:text-3xl sm:text-xl mb-2 w-full break-words overflow-y-auto max-h-36 leading-snug">{card.front}</h2>
+      <h2 className="text-3xl lg:text-4xl sm:text-2xl mb-2 w-full break-words overflow-y-auto max-h-44 leading-snug">{card.front}</h2>
       {card.frontAudioUrl && <AudioButton onClick={playFrontAudio} disabled={isPlaying} label={`Play ${card.frontLabel || 'front'} audio`} />}
     </div>
   );
 
   const backContent = reversed ? (
     <div className="flex flex-col items-center justify-center w-full h-full text-center overflow-hidden">
-      <h2 className="text-2xl lg:text-3xl sm:text-xl mb-2 w-full break-words overflow-y-auto max-h-36 leading-snug">{card.front}</h2>
+      <h2 className="text-3xl lg:text-4xl sm:text-2xl mb-2 w-full break-words overflow-y-auto max-h-44 leading-snug">{card.front}</h2>
       {card.frontAudioUrl && <AudioButton onClick={playFrontAudio} disabled={isPlaying} label={`Play ${card.frontLabel || 'front'} audio`} />}
     </div>
   ) : (
     <div className="flex flex-col items-center justify-center w-full h-full text-center overflow-hidden">
-      <h2 className="text-2xl lg:text-3xl sm:text-xl mb-2 w-full break-words overflow-y-auto max-h-36 leading-snug">{card.back}</h2>
+      <h2 className="text-3xl lg:text-4xl sm:text-2xl mb-2 w-full break-words overflow-y-auto max-h-44 leading-snug">{card.back}</h2>
       {card.backAudioUrl && <AudioButton onClick={playBackAudio} disabled={isPlaying} label={`Play ${card.backLabel || 'back'} audio`} />}
       <TagsDisplay />
     </div>
@@ -122,7 +124,7 @@ const Flashcard: React.FC<FlashcardProps> = ({
 
   return (
     <div
-      className="w-full max-w-lg lg:max-w-xl h-[300px] lg:h-[320px] sm:h-[200px] perspective-1000 my-8 sm:my-6 mx-auto cursor-pointer outline-none"
+      className="w-full max-w-2xl h-[400px] lg:h-[420px] sm:h-[280px] perspective-1000 my-8 sm:my-6 mx-auto cursor-pointer outline-none"
       onClick={handleFlip}
       role="button"
       tabIndex={0}
@@ -147,40 +149,38 @@ const Flashcard: React.FC<FlashcardProps> = ({
           }
         }}
       >
-        <div
-          className="absolute w-full h-full backface-hidden flex flex-col justify-center items-center rounded-xl p-6 sm:p-4 overflow-hidden"
-          style={{ backgroundColor: 'var(--button-bg)', color: 'var(--button-text)' }}
-        >
+        {/* Front face */}
+        <div className="absolute w-full h-full backface-hidden flex flex-col justify-center items-center rounded-xl p-8 sm:p-6 overflow-hidden border" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border-color)', color: 'var(--card-text)' }}>
           {frontContent}
         </div>
-        <div
-          className="absolute w-full h-full backface-hidden flex flex-col justify-center items-center rounded-xl p-6 sm:p-4 overflow-hidden rotate-y-180"
-          style={{ backgroundColor: '#2ecc71', color: 'var(--button-text)' }}
-        >
+        {/* Back face */}
+        <div className="absolute w-full h-full backface-hidden flex flex-col justify-center items-center rounded-xl p-8 sm:p-6 overflow-hidden rotate-y-180 border" style={{ backgroundColor: 'var(--card-bg-back)', borderColor: 'var(--card-border-color)', color: 'var(--card-text)' }}>
           {backContent}
         </div>
       </div>
 
       {error && (
-        <div className="mt-2 px-2 py-1 rounded text-sm" style={{ color: 'var(--error-color)', backgroundColor: 'var(--error-bg)' }}>
+        <div className="mt-2 px-3 py-2 rounded text-sm bg-red-50 text-red-700 border border-red-200">
           {error}
         </div>
       )}
 
-      <div className="mt-4 sm:mt-2 flex justify-between w-full">
+      <div className="mt-4 sm:mt-3 flex justify-between w-full">
         <button
           onClick={(e) => { e.stopPropagation(); onPrevious(); }}
-          className="px-4 py-2 sm:px-3 sm:py-1.5 sm:text-sm rounded bg-[#34495e] text-white transition-colors hover:bg-[#2c3e50]"
+          className="px-5 py-2.5 sm:px-4 sm:py-2 sm:text-sm rounded-lg text-white transition-colors cursor-pointer"
+          style={{ backgroundColor: 'var(--btn-bg)' }}
           aria-label="Previous flashcard"
         >
-          ◀ Previous
+          ← Previous
         </button>
         <button
           onClick={(e) => { e.stopPropagation(); onNext(); }}
-          className="px-4 py-2 sm:px-3 sm:py-1.5 sm:text-sm rounded bg-[#34495e] text-white transition-colors hover:bg-[#2c3e50]"
+          className="px-5 py-2.5 sm:px-4 sm:py-2 sm:text-sm rounded-lg text-white transition-colors cursor-pointer"
+          style={{ backgroundColor: 'var(--btn-bg)' }}
           aria-label="Next flashcard"
         >
-          Next ▶
+          Next →
         </button>
       </div>
     </div>

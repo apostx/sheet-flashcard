@@ -1,6 +1,6 @@
 {
   "name": "sheet-flashcard",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "A universal flashcard application powered by Google Sheets",
   "type": "module",
   "homepage": "https://apostx.github.io/sheet-flashcard/",
@@ -10,7 +10,9 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +29,16 @@
     "@vitejs/plugin-react": "^4.3.4",
     "gh-pages": "^6.3.0",
     "typescript": "^5.8.3",
-    "vite": "^6.0.7"
+    "vite": "^6.0.7",
+    "storybook": "^10.1.10",
+    "@storybook/react-vite": "^10.1.10",
+    "@chromatic-com/storybook": "^4.1.3",
+    "@storybook/addon-vitest": "^10.1.10",
+    "@storybook/addon-a11y": "^10.1.10",
+    "@storybook/addon-docs": "^10.1.10",
+    "vitest": "^4.0.16",
+    "playwright": "^1.57.0",
+    "@vitest/browser-playwright": "^4.0.16",
+    "@vitest/coverage-v8": "^4.0.16"
   }
 }
