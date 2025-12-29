@@ -2,12 +2,13 @@
   "name": "sheet-flashcard",
   "version": "3.0.0",
   "description": "A universal flashcard application powered by Google Sheets",
-  "main": "index.js",
+  "type": "module",
   "homepage": "https://apostx.github.io/sheet-flashcard/",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack serve --mode development",
-    "build": "webpack --mode production && node copy-static.js",
+    "dev": "vite",
+    "start": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
@@ -15,23 +16,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/react": "^19.1.7",
-    "@types/react-dom": "^19.1.6",
-    "axios": "^1.9.0",
-    "copy-webpack-plugin": "^11.0.0",
-    "css-loader": "^7.1.2",
-    "file-loader": "^6.2.0",
-    "html-webpack-plugin": "^5.6.3",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "style-loader": "^4.0.0",
-    "ts-loader": "^9.5.2",
-    "typescript": "^5.8.3",
-    "webpack": "^5.99.9",
-    "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.2"
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "gh-pages": "^6.3.0"
+    "@types/react": "^19.1.7",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.3.4",
+    "gh-pages": "^6.3.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.0.7"
   }
 }

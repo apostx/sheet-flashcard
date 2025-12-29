@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Flashcard } from '../types/Flashcard';
 import { getQueryParam } from '../utils/urlUtils';
 
@@ -126,11 +125,15 @@ const extractLabelsFromHeader = (headerRow: string[]): {frontLabel: string, back
 export const fetchFlashcardData = async (): Promise<Flashcard[]> => {
   try {
     // Try direct fetch first
-    let response;
+    let csvText: string;
     try {
       console.log('Attempting direct fetch from Google Sheets...');
       const spreadsheetUrl = getSpreadsheetUrl();
-      response = await axios.get(spreadsheetUrl);
+      const response = await fetch(spreadsheetUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      csvText = await response.text();
       console.log('Direct fetch successful!');
     } catch (corsError) {
       console.warn('Direct fetch failed:', corsError);
@@ -139,7 +142,11 @@ export const fetchFlashcardData = async (): Promise<Flashcard[]> => {
       try {
         console.log('Attempting fetch via CORS proxy...');
         const spreadsheetUrl = getSpreadsheetUrl();
-        response = await axios.get(`${CORS_PROXY_URL}${spreadsheetUrl}`);
+        const response = await fetch(`${CORS_PROXY_URL}${spreadsheetUrl}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        csvText = await response.text();
         console.log('CORS proxy fetch successful!');
       } catch (proxyError) {
         console.warn('CORS proxy fetch failed:', proxyError);
@@ -149,90 +156,70 @@ export const fetchFlashcardData = async (): Promise<Flashcard[]> => {
       }
     }
 
-    // Handle the response based on its type
-    if (response && response.data) {
-      console.log('Response data type:', typeof response.data);
+    // Parse the CSV data
+    console.log('Parsing CSV data...');
+    const rows = parseCSV(csvText);
 
-      // If it's a string (CSV data), parse it
-      if (typeof response.data === 'string') {
-        console.log('Parsing CSV data...');
-        const rows = parseCSV(response.data);
+    // First row must be the header with labels
+    // If no header is found, use generic names
+    let frontLabel = 'Front';
+    let backLabel = 'Back';
 
-        // First row must be the header with labels
-        // If no header is found, use generic names
-        let frontLabel = 'Front';
-        let backLabel = 'Back';
+    // Always use the first row as header
+    const startIndex = 1;
 
-        // Always use the first row as header
-        const startIndex = 1;
-
-        if (rows.length > 0) {
-          // First row contains label information
-          const labels = extractLabelsFromHeader(rows[0]);
-          frontLabel = labels.frontLabel;
-          backLabel = labels.backLabel;
-        } else {
-          console.warn('No header row found in spreadsheet, using generic labels');
-        }
-
-        const parsedCards: Flashcard[] = [];
-
-        rows.slice(startIndex).forEach((columns, index) => {
-            // We need the front and back content to be present
-            if (!columns[0] || !columns[0].trim()) {
-                console.warn(`Row ${index + startIndex} has no ${frontLabel} content:`, columns);
-                return;
-            }
-
-            // Get the back content from the appropriate column (index 2, or 1 if only 2 columns)
-            const back = columns.length >= 3 ? columns[2].trim() :
-                         columns.length >= 2 ? columns[1].trim() : '';
-
-            if (!back) {
-                console.warn(`Row ${index + startIndex} has no ${backLabel} content:`, columns);
-                return;
-            }
-
-            // Parse repetition count from 5th column if available
-            let repetitionCount: number | undefined = 1; // Default to 1 if not specified
-            if (columns.length >= 5 && columns[4].trim() !== '') {
-                const repCount = parseInt(columns[4].trim(), 10);
-                // Only use the value if it's a valid number
-                if (!isNaN(repCount)) {
-                    repetitionCount = repCount;
-                }
-            }
-
-            parsedCards.push({
-                id: index,
-                front: columns[0].trim(),
-                // Audio URLs are optional
-                frontAudioUrl: columns.length >= 2 ? columns[1].trim() : undefined,
-                back: back,
-                backAudioUrl: columns.length >= 4 ? columns[3].trim() : undefined,
-                frontLabel: frontLabel,
-                backLabel: backLabel,
-                repetitionCount: repetitionCount
-            });
-        });
-
-        console.log(`Parsed ${parsedCards.length} flashcards from CSV`);
-        return parsedCards;
-      }
-      // If it's already an array (JSON data), return it directly
-      else if (Array.isArray(response.data)) {
-        console.log(`Received ${response.data.length} flashcards from JSON`);
-        return response.data;
-      }
-      // Unexpected data format
-      else {
-        console.error('Unexpected data format:', response.data);
-        throw new Error('Unexpected data format received');
-      }
+    if (rows.length > 0) {
+      // First row contains label information
+      const labels = extractLabelsFromHeader(rows[0]);
+      frontLabel = labels.frontLabel;
+      backLabel = labels.backLabel;
     } else {
-      console.error('No data in response');
-      throw new Error('No data received');
+      console.warn('No header row found in spreadsheet, using generic labels');
     }
+
+    const parsedCards: Flashcard[] = [];
+
+    rows.slice(startIndex).forEach((columns, index) => {
+      // We need the front and back content to be present
+      if (!columns[0] || !columns[0].trim()) {
+        console.warn(`Row ${index + startIndex} has no ${frontLabel} content:`, columns);
+        return;
+      }
+
+      // Get the back content from the appropriate column (index 2, or 1 if only 2 columns)
+      const back = columns.length >= 3 ? columns[2].trim() :
+                   columns.length >= 2 ? columns[1].trim() : '';
+
+      if (!back) {
+        console.warn(`Row ${index + startIndex} has no ${backLabel} content:`, columns);
+        return;
+      }
+
+      // Parse repetition count from 5th column if available
+      let repetitionCount: number | undefined = 1; // Default to 1 if not specified
+      if (columns.length >= 5 && columns[4].trim() !== '') {
+        const repCount = parseInt(columns[4].trim(), 10);
+        // Only use the value if it's a valid number
+        if (!isNaN(repCount)) {
+          repetitionCount = repCount;
+        }
+      }
+
+      parsedCards.push({
+        id: index,
+        front: columns[0].trim(),
+        // Audio URLs are optional
+        frontAudioUrl: columns.length >= 2 ? columns[1].trim() : undefined,
+        back: back,
+        backAudioUrl: columns.length >= 4 ? columns[3].trim() : undefined,
+        frontLabel: frontLabel,
+        backLabel: backLabel,
+        repetitionCount: repetitionCount
+      });
+    });
+
+    console.log(`Parsed ${parsedCards.length} flashcards from CSV`);
+    return parsedCards;
   } catch (error) {
     console.error('Fatal error in fetchFlashcardData:', error);
     throw error;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Flashcard as FlashcardType } from '../types/Flashcard';
 import { useAudio } from '../hooks/useAudio';
 import '../styles/Flashcard.css';

@@ -17,7 +17,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
   const [autoplay, setAutoplay] = useState(false);
   const [autoplayTimings, setAutoplayTimings] = useState<AutoplayTimings>(() => parseAutoplayTimings());
   const [showTimingControls, setShowTimingControls] = useState(false);
-  const autoplayTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const autoplayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Generate the actual deck, respecting repetition counts
   const actualDeck = useMemo(() => {
