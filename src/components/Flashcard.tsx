@@ -74,10 +74,31 @@ const Flashcard: React.FC<FlashcardProps> = ({
     </button>
   );
 
+  const TagsDisplay = () => {
+    if (!card.tags || card.tags.length === 0) return null;
+
+    return (
+      <div className="flex flex-wrap gap-1.5 mt-3 justify-center" onClick={(e) => e.stopPropagation()}>
+        {card.tags.map((tag, index) => (
+          <span
+            key={index}
+            className="px-2 py-0.5 text-xs rounded-full bg-white/25 hover:bg-white/40 transition-colors cursor-default"
+            title={tag.description}
+          >
+            #{tag.label}
+          </span>
+        ))}
+      </div>
+    );
+  };
+
+  // When reversed: front shows back content, back shows front content
+  // Tags always appear on the "back" side of the card (green side)
   const frontContent = reversed ? (
     <div className="flex flex-col items-center justify-center w-full h-full text-center overflow-hidden">
       <h2 className="text-2xl lg:text-3xl sm:text-xl mb-2 w-full break-words overflow-y-auto max-h-36 leading-snug">{card.back}</h2>
       {card.backAudioUrl && <AudioButton onClick={playBackAudio} disabled={isPlaying} label={`Play ${card.backLabel || 'back'} audio`} />}
+      <TagsDisplay />
     </div>
   ) : (
     <div className="flex flex-col items-center justify-center w-full h-full text-center overflow-hidden">
@@ -95,6 +116,7 @@ const Flashcard: React.FC<FlashcardProps> = ({
     <div className="flex flex-col items-center justify-center w-full h-full text-center overflow-hidden">
       <h2 className="text-2xl lg:text-3xl sm:text-xl mb-2 w-full break-words overflow-y-auto max-h-36 leading-snug">{card.back}</h2>
       {card.backAudioUrl && <AudioButton onClick={playBackAudio} disabled={isPlaying} label={`Play ${card.backLabel || 'back'} audio`} />}
+      <TagsDisplay />
     </div>
   );
 

@@ -1,4 +1,4 @@
-import { Flashcard } from '../types/Flashcard';
+import { Flashcard, Tag } from '../types/Flashcard';
 import { getQueryParam } from '../utils/urlUtils';
 
 // Default Google Spreadsheet values
@@ -13,6 +13,7 @@ const DEFAULT_SHEET_ID = 0;
  * Column 3: Back side content (description, definition, answer)
  * Column 4: URL to back side audio (optional)
  * Column 5: Repetition count (optional, default: 1)
+ * Column 6+: Tag pairs (label, description, label, description, ...)
  */
 
 // Get spreadsheet parameters from URL or use defaults
@@ -205,6 +206,16 @@ export const fetchFlashcardData = async (): Promise<Flashcard[]> => {
         }
       }
 
+      // Parse tags from columns 6+ (pairs of label, description)
+      const tags: Tag[] = [];
+      for (let i = 5; i < columns.length; i += 2) {
+        const label = columns[i]?.trim();
+        if (label) {
+          const description = columns[i + 1]?.trim() || undefined;
+          tags.push({ label, description });
+        }
+      }
+
       parsedCards.push({
         id: index,
         front: columns[0].trim(),
@@ -214,7 +225,8 @@ export const fetchFlashcardData = async (): Promise<Flashcard[]> => {
         backAudioUrl: columns.length >= 4 ? columns[3].trim() : undefined,
         frontLabel: frontLabel,
         backLabel: backLabel,
-        repetitionCount: repetitionCount
+        repetitionCount: repetitionCount,
+        tags: tags.length > 0 ? tags : undefined
       });
     });
 

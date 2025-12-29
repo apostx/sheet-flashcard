@@ -31,6 +31,7 @@ src/
 - Dark/light theme toggle
 - Shuffle mode and direction toggle
 - Card repetition count support
+- Hashtag-style tags with tooltip descriptions
 - URL parameters for customization (spreadsheetId, sheetId, flipTime, nextTime, debug)
 
 ## Data Source
@@ -40,6 +41,7 @@ Google Spreadsheet structure:
 - Column 3: Back side content (required)
 - Column 4: Back audio URL (optional)
 - Column 5: Repetition count (optional, default: 1)
+- Column 6+: Tag pairs (tag label, tag description, tag label, tag description, ...)
 
 ## Claude Hooks
 Pre-tool-call hook (`.claude/hooks/pre-tool-call.sh`) enforces:

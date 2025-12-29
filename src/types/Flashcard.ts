@@ -1,3 +1,8 @@
+export interface Tag {
+  label: string;
+  description?: string;
+}
+
 export interface Flashcard {
   id: number;
   front: string;
@@ -7,4 +12,5 @@ export interface Flashcard {
   frontLabel?: string;
   backLabel?: string;
   repetitionCount?: number;
+  tags?: Tag[];
 }
