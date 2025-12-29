@@ -18,14 +18,14 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
   const [autoplayTimings, setAutoplayTimings] = useState<AutoplayTimings>(() => parseAutoplayTimings());
   const [showTimingControls, setShowTimingControls] = useState(false);
   const autoplayTimerRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   // Generate the actual deck, respecting repetition counts
   const actualDeck = useMemo(() => {
     const deck: FlashcardType[] = [];
-    
+
     flashcards.forEach(card => {
       const count = card.repetitionCount !== undefined ? card.repetitionCount : 1;
-      
+
       // Only add cards with repetition count > 0
       if (count > 0) {
         // Add the card the specified number of times
@@ -34,17 +34,17 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
         }
       }
     });
-    
+
     return deck;
   }, [flashcards]);
-  
-  // Extract language information from the first card if available
-  const sourceLanguage = flashcards.length > 0 && flashcards[0].sourceLanguage 
-    ? flashcards[0].sourceLanguage 
-    : 'Source';
-  const targetLanguage = flashcards.length > 0 && flashcards[0].targetLanguage 
-    ? flashcards[0].targetLanguage 
-    : 'Target';
+
+  // Extract label information from the first card if available
+  const frontLabel = flashcards.length > 0 && flashcards[0].frontLabel
+    ? flashcards[0].frontLabel
+    : 'Front';
+  const backLabel = flashcards.length > 0 && flashcards[0].backLabel
+    ? flashcards[0].backLabel
+    : 'Back';
 
   // Function to generate shuffled indices
   const generateShuffledIndices = () => {
@@ -94,7 +94,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
     if (!autoplay) return;
 
     clearAutoplayTimer();
-    
+
     autoplayTimerRef.current = setTimeout(() => {
       if (isFlipped) {
         // Card is flipped, wait nextTime then flip back and go to next card
@@ -136,7 +136,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    
+
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
@@ -164,7 +164,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
     clearAutoplayTimer(); // Reset timer when manually flipping
     setIsFlipped(prev => !prev);
   }, [clearAutoplayTimer]);
-  
+
   // Add keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -187,7 +187,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    
+
     // Clean up event listener on component unmount
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
@@ -200,7 +200,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
       clearAutoplayTimer();
     };
   }, [clearAutoplayTimer]);
-  
+
   const toggleShuffleMode = () => {
     if (!shuffleMode) {
       generateShuffledIndices();
@@ -212,7 +212,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
     setShuffleMode(!shuffleMode);
   };
 
-  const toggleLanguageDirection = () => {
+  const toggleDirection = () => {
     setReversed(!reversed);
   };
 
@@ -243,7 +243,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
     };
 
     window.addEventListener('popstate', handlePopState);
-    
+
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
@@ -255,35 +255,35 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
 
   const actualIndex = getActualIndex();
   const currentCard = actualDeck[actualIndex];
-  
+
   if (!currentCard) {
     return <div className="error-card">Error: Card data is invalid.</div>;
   }
-  
+
   return (
     <div className="flashcard-deck">
       <div className="deck-controls">
         <div className="control-buttons">
-          <button 
-            onClick={toggleShuffleMode} 
+          <button
+            onClick={toggleShuffleMode}
             className={`control-button ${shuffleMode ? 'active' : ''}`}
             title={shuffleMode ? "Switch to ordered mode" : "Switch to shuffle mode"}
             aria-label={shuffleMode ? "Switch to ordered mode" : "Switch to shuffle mode"}
           >
             {shuffleMode ? '🔀 Shuffle' : '🔢 Ordered'}
           </button>
-          
-          <button 
-            onClick={toggleLanguageDirection} 
+
+          <button
+            onClick={toggleDirection}
             className={`control-button ${reversed ? 'active' : ''}`}
-            title={reversed ? `Show ${targetLanguage} → ${sourceLanguage}` : `Show ${sourceLanguage} → ${targetLanguage}`}
-            aria-label={reversed ? `Switch to ${sourceLanguage} first` : `Switch to ${targetLanguage} first`}
+            title={reversed ? `Show ${backLabel} → ${frontLabel}` : `Show ${frontLabel} → ${backLabel}`}
+            aria-label={reversed ? `Switch to ${frontLabel} first` : `Switch to ${backLabel} first`}
           >
-            {reversed ? `🔄 ${targetLanguage} → ${sourceLanguage}` : `🔄 ${sourceLanguage} → ${targetLanguage}`}
+            {reversed ? `🔄 ${backLabel} → ${frontLabel}` : `🔄 ${frontLabel} → ${backLabel}`}
           </button>
 
-          <button 
-            onClick={toggleAutoplay} 
+          <button
+            onClick={toggleAutoplay}
             className={`control-button ${autoplay ? 'active' : ''}`}
             title={autoplay ? "Stop autoplay" : "Start autoplay"}
             aria-label={autoplay ? "Stop autoplay" : "Start autoplay"}
@@ -291,8 +291,8 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
             {autoplay ? '⏸️ Autoplay' : '▶️ Autoplay'}
           </button>
 
-          <button 
-            onClick={() => setShowTimingControls(!showTimingControls)} 
+          <button
+            onClick={() => setShowTimingControls(!showTimingControls)}
             className={`control-button ${showTimingControls ? 'active' : ''}`}
             title="Autoplay timing settings"
             aria-label="Autoplay timing settings"
@@ -316,7 +316,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
               />
               <span>{(autoplayTimings.flipTime / 1000).toFixed(1)}s</span>
             </div>
-            
+
             <div className="timing-control">
               <label htmlFor="next-time">Time before next card (seconds):</label>
               <input
@@ -332,14 +332,14 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
             </div>
           </div>
         )}
-        
+
         <div className="deck-info">
           Card {currentCardIndex + 1} of {shuffleMode ? shuffledIndices.length : actualDeck.length}
         </div>
       </div>
-      
-      <Flashcard 
-        card={currentCard} 
+
+      <Flashcard
+        card={currentCard}
         onNext={handleNext}
         onPrevious={handlePrevious}
         reversed={reversed}

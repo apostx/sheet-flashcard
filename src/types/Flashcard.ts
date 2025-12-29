@@ -1,10 +1,10 @@
 export interface Flashcard {
   id: number;
-  sourceWord: string;
-  sourceSoundUrl?: string;
-  targetTranslation: string;
-  targetSoundUrl?: string;
-  sourceLanguage?: string;
-  targetLanguage?: string;
+  front: string;
+  frontAudioUrl?: string;
+  back: string;
+  backAudioUrl?: string;
+  frontLabel?: string;
+  backLabel?: string;
   repetitionCount?: number;
 }

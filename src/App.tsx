@@ -12,10 +12,10 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [debugInfo, setDebugInfo] = useState<string>('');
-  
+
   // Theme management
   const { theme, toggleTheme } = useTheme();
-  
+
   // Check if debug mode is enabled via URL query parameter - default is false
   const isDebugMode = getBooleanQueryParam('debug', false);
 
@@ -26,7 +26,7 @@ const App: React.FC = () => {
         setDebugInfo('Fetching flashcard data...');
         const data = await fetchFlashcardData();
         setDebugInfo(prev => `${prev}\nData received: ${JSON.stringify(data).substring(0, 100)}...`);
-        
+
         if (data && Array.isArray(data) && data.length > 0) {
           setFlashcards(data);
           setDebugInfo(prev => `${prev}\nLoaded ${data.length} flashcards successfully.`);
@@ -58,8 +58,8 @@ const App: React.FC = () => {
     <div className="error">
       <h2>Error</h2>
       <p>{error}</p>
-      <button 
-        className="retry-button" 
+      <button
+        className="retry-button"
         onClick={() => window.location.reload()}
       >
         Retry
@@ -76,7 +76,7 @@ const App: React.FC = () => {
   const renderFlashcards = () => (
     <>
       <FlashcardDeck flashcards={flashcards} />
-      
+
       {isDebugMode && (
         <div className="debug-info">
           <h3>Debug Information:</h3>
@@ -93,26 +93,26 @@ const App: React.FC = () => {
     </>
   );
 
-  // Get languages from the first flashcard if available
-  const sourceLanguage = flashcards.length > 0 ? flashcards[0].sourceLanguage || 'Source' : 'Source';
-  const targetLanguage = flashcards.length > 0 ? flashcards[0].targetLanguage || 'Target' : 'Target';
-  
-  const headerTitle = `${sourceLanguage}-${targetLanguage} Flashcards`;
+  // Get labels from the first flashcard if available
+  const frontLabel = flashcards.length > 0 ? flashcards[0].frontLabel || 'Front' : 'Front';
+  const backLabel = flashcards.length > 0 ? flashcards[0].backLabel || 'Back' : 'Back';
+
+  const headerTitle = `${frontLabel} - ${backLabel} Flashcards`;
 
   return (
     <div className="app">
       <header className="app-header">
         <h1>{headerTitle}</h1>
-        <p className="app-subtitle">Learn vocabulary with interactive flashcards</p>
+        <p className="app-subtitle">Learn with interactive flashcards</p>
         <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       </header>
-      
+
       <main className="app-main">
         {loading ? renderLoadingState() : error ? renderErrorState() : renderFlashcards()}
       </main>
-      
+
       <footer className="app-footer">
-        <p>Language Flashcard Application</p>
+        <p>Sheet Flashcard</p>
         <p className="footer-note">Tap or click a card to flip it</p>
       </footer>
     </div>

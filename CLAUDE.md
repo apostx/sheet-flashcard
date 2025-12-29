@@ -1,13 +1,13 @@
-# Language Flashcard Project Documentation
+# Sheet Flashcard Project Documentation
 
 ## Overview
-A static SPA for vocabulary flashcards supporting any language pair, deployed to GitHub Pages at https://apostx.github.io/language-flashcard/
+A static SPA for universal flashcards (any topic/description pairs), deployed to GitHub Pages at https://apostx.github.io/sheet-flashcard/
 
 ## Technology Stack
 - TypeScript with React 19
-- Webpack for bundling
-- CSS for styling (with CSS variables for theming)
-- Axios for data fetching from Google Sheets
+- Webpack for bundling (migrating to Vite)
+- CSS for styling (migrating to Tailwind v4)
+- Axios for data fetching (migrating to fetch)
 - gh-pages for deployment
 
 ## Architecture
@@ -26,19 +26,19 @@ src/
 
 ## Key Features
 - Interactive flashcards with flip animation
-- Audio playback for both languages
+- Audio playback for both sides
 - Autoplay mode with customizable timing
 - Dark/light theme toggle
-- Shuffle mode and language direction toggle
+- Shuffle mode and direction toggle
 - Card repetition count support
 - URL parameters for customization (spreadsheetId, sheetId, flipTime, nextTime, debug)
 
 ## Data Source
 Google Spreadsheet structure:
-- Column 1: Source language word (required)
-- Column 2: Source audio URL (optional)
-- Column 3: Target language translation (required)
-- Column 4: Target audio URL (optional)
+- Column 1: Front side content (required)
+- Column 2: Front audio URL (optional)
+- Column 3: Back side content (required)
+- Column 4: Back audio URL (optional)
 - Column 5: Repetition count (optional, default: 1)
 
 ## Claude Hooks

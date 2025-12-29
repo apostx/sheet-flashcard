@@ -12,22 +12,22 @@ interface FlashcardProps {
   onFlip?: () => void;
 }
 
-const Flashcard: React.FC<FlashcardProps> = ({ 
-  card, 
-  onNext, 
-  onPrevious, 
+const Flashcard: React.FC<FlashcardProps> = ({
+  card,
+  onNext,
+  onPrevious,
   reversed = false,
   isFlipped: externalIsFlipped,
   onFlip: externalOnFlip
 }) => {
   const [internalIsFlipped, setInternalIsFlipped] = useState(false);
   const { playAudio, isPlaying, error } = useAudio();
-  
+
   // Determine if controlled externally or internally
   const isControlledExternally = externalIsFlipped !== undefined && externalOnFlip !== undefined;
   const isFlipped = isControlledExternally ? externalIsFlipped : internalIsFlipped;
 
-  if (!card || !card.sourceWord || !card.targetTranslation) {
+  if (!card || !card.front || !card.back) {
     return (
       <div className="flashcard error">
         <div className="flashcard-inner">
@@ -47,29 +47,29 @@ const Flashcard: React.FC<FlashcardProps> = ({
     }
   };
 
-  const playSourceAudio = (e: React.MouseEvent) => {
+  const playFrontAudio = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (card.sourceSoundUrl) {
-      playAudio(card.sourceSoundUrl);
+    if (card.frontAudioUrl) {
+      playAudio(card.frontAudioUrl);
     }
   };
 
-  const playTargetAudio = (e: React.MouseEvent) => {
+  const playBackAudio = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (card.targetSoundUrl) {
-      playAudio(card.targetSoundUrl);
+    if (card.backAudioUrl) {
+      playAudio(card.backAudioUrl);
     }
   };
 
   const frontContent = reversed ? (
     <div className="flashcard-content">
-      <h2>{card.targetTranslation}</h2>
-      {card.targetSoundUrl && (
-        <button 
+      <h2>{card.back}</h2>
+      {card.backAudioUrl && (
+        <button
           className="audio-button"
-          onClick={playTargetAudio} 
+          onClick={playBackAudio}
           disabled={isPlaying}
-          aria-label={`Play ${card.targetLanguage || 'target language'} pronunciation`}
+          aria-label={`Play ${card.backLabel || 'back'} audio`}
         >
           🔊
         </button>
@@ -77,13 +77,13 @@ const Flashcard: React.FC<FlashcardProps> = ({
     </div>
   ) : (
     <div className="flashcard-content">
-      <h2>{card.sourceWord}</h2>
-      {card.sourceSoundUrl && (
-        <button 
+      <h2>{card.front}</h2>
+      {card.frontAudioUrl && (
+        <button
           className="audio-button"
-          onClick={playSourceAudio} 
+          onClick={playFrontAudio}
           disabled={isPlaying}
-          aria-label={`Play ${card.sourceLanguage || 'source language'} pronunciation`}
+          aria-label={`Play ${card.frontLabel || 'front'} audio`}
         >
           🔊
         </button>
@@ -93,13 +93,13 @@ const Flashcard: React.FC<FlashcardProps> = ({
 
   const backContent = reversed ? (
     <div className="flashcard-content">
-      <h2>{card.sourceWord}</h2>
-      {card.sourceSoundUrl && (
-        <button 
+      <h2>{card.front}</h2>
+      {card.frontAudioUrl && (
+        <button
           className="audio-button"
-          onClick={playSourceAudio} 
+          onClick={playFrontAudio}
           disabled={isPlaying}
-          aria-label={`Play ${card.sourceLanguage || 'source language'} pronunciation`}
+          aria-label={`Play ${card.frontLabel || 'front'} audio`}
         >
           🔊
         </button>
@@ -107,13 +107,13 @@ const Flashcard: React.FC<FlashcardProps> = ({
     </div>
   ) : (
     <div className="flashcard-content">
-      <h2>{card.targetTranslation}</h2>
-      {card.targetSoundUrl && (
-        <button 
+      <h2>{card.back}</h2>
+      {card.backAudioUrl && (
+        <button
           className="audio-button"
-          onClick={playTargetAudio} 
+          onClick={playBackAudio}
           disabled={isPlaying}
-          aria-label={`Play ${card.targetLanguage || 'target language'} pronunciation`}
+          aria-label={`Play ${card.backLabel || 'back'} audio`}
         >
           🔊
         </button>
@@ -122,8 +122,8 @@ const Flashcard: React.FC<FlashcardProps> = ({
   );
 
   return (
-    <div 
-      className={`flashcard ${isFlipped ? 'flipped' : ''}`} 
+    <div
+      className={`flashcard ${isFlipped ? 'flipped' : ''}`}
       onClick={handleFlip}
       role="button"
       tabIndex={0}
@@ -143,19 +143,19 @@ const Flashcard: React.FC<FlashcardProps> = ({
           {backContent}
         </div>
       </div>
-      
+
       {error && <div className="error-message">{error}</div>}
-      
+
       <div className="flashcard-navigation">
-        <button 
-          onClick={(e) => { e.stopPropagation(); onPrevious(); }} 
+        <button
+          onClick={(e) => { e.stopPropagation(); onPrevious(); }}
           className="nav-button"
           aria-label="Previous flashcard"
         >
           ◀ Previous
         </button>
-        <button 
-          onClick={(e) => { e.stopPropagation(); onNext(); }} 
+        <button
+          onClick={(e) => { e.stopPropagation(); onNext(); }}
           className="nav-button"
           aria-label="Next flashcard"
         >

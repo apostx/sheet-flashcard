@@ -1,9 +1,9 @@
 {
-  "name": "language-flashcard",
-  "version": "2.6.1",
-  "description": "A language flashcard application for learning vocabulary between any languages",
+  "name": "sheet-flashcard",
+  "version": "3.0.0",
+  "description": "A universal flashcard application powered by Google Sheets",
   "main": "index.js",
-  "homepage": "https://apostx.github.io/language-flashcard/",
+  "homepage": "https://apostx.github.io/sheet-flashcard/",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack serve --mode development",
