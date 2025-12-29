@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import Flashcard from './Flashcard';
 import { Flashcard as FlashcardType } from '../types/Flashcard';
 import { parseAutoplayTimings, updateUrlTimings, AutoplayTimings } from '../utils/urlParams';
-import '../styles/FlashcardDeck.css';
 
 interface FlashcardDeckProps {
   flashcards: FlashcardType[];
@@ -250,23 +249,36 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
   }, []);
 
   if (!actualDeck || actualDeck.length === 0) {
-    return <div className="no-cards">No flashcards available.</div>;
+    return (
+      <div className="p-8 text-center rounded-lg max-w-md mx-auto my-8 border" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border-color)', color: 'var(--text-color)' }}>
+        No flashcards available.
+      </div>
+    );
   }
 
   const actualIndex = getActualIndex();
   const currentCard = actualDeck[actualIndex];
 
   if (!currentCard) {
-    return <div className="error-card">Error: Card data is invalid.</div>;
+    return (
+      <div className="p-8 text-center rounded-lg max-w-md mx-auto my-8" style={{ backgroundColor: 'var(--error-bg)', color: 'var(--error-color)' }}>
+        Error: Card data is invalid.
+      </div>
+    );
   }
 
+  const controlButtonBase = "py-2.5 px-4 sm:py-2 sm:px-3 sm:text-sm rounded cursor-pointer text-sm transition-all duration-300 flex items-center gap-2 font-medium outline-none border";
+  const controlButtonInactive = "hover:opacity-80";
+  const controlButtonActive = "!bg-[var(--button-bg)] !text-[var(--button-text)] !border-[var(--button-bg)]";
+
   return (
-    <div className="flashcard-deck">
-      <div className="deck-controls">
-        <div className="control-buttons">
+    <div className="flex flex-col items-center w-full max-w-3xl mx-auto px-4">
+      <div className="flex flex-col justify-between items-center w-full mb-6 gap-4">
+        <div className="flex gap-4 sm:gap-2 flex-wrap justify-center">
           <button
             onClick={toggleShuffleMode}
-            className={`control-button ${shuffleMode ? 'active' : ''}`}
+            className={`${controlButtonBase} ${shuffleMode ? controlButtonActive : controlButtonInactive}`}
+            style={!shuffleMode ? { backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' } : undefined}
             title={shuffleMode ? "Switch to ordered mode" : "Switch to shuffle mode"}
             aria-label={shuffleMode ? "Switch to ordered mode" : "Switch to shuffle mode"}
           >
@@ -275,7 +287,8 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
 
           <button
             onClick={toggleDirection}
-            className={`control-button ${reversed ? 'active' : ''}`}
+            className={`${controlButtonBase} ${reversed ? controlButtonActive : controlButtonInactive}`}
+            style={!reversed ? { backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' } : undefined}
             title={reversed ? `Show ${backLabel} → ${frontLabel}` : `Show ${frontLabel} → ${backLabel}`}
             aria-label={reversed ? `Switch to ${frontLabel} first` : `Switch to ${backLabel} first`}
           >
@@ -284,7 +297,8 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
 
           <button
             onClick={toggleAutoplay}
-            className={`control-button ${autoplay ? 'active' : ''}`}
+            className={`${controlButtonBase} ${autoplay ? controlButtonActive : controlButtonInactive}`}
+            style={!autoplay ? { backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' } : undefined}
             title={autoplay ? "Stop autoplay" : "Start autoplay"}
             aria-label={autoplay ? "Stop autoplay" : "Start autoplay"}
           >
@@ -293,7 +307,8 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
 
           <button
             onClick={() => setShowTimingControls(!showTimingControls)}
-            className={`control-button ${showTimingControls ? 'active' : ''}`}
+            className={`${controlButtonBase} ${showTimingControls ? controlButtonActive : controlButtonInactive}`}
+            style={!showTimingControls ? { backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' } : undefined}
             title="Autoplay timing settings"
             aria-label="Autoplay timing settings"
           >
@@ -302,9 +317,11 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
         </div>
 
         {showTimingControls && (
-          <div className="timing-controls">
-            <div className="timing-control">
-              <label htmlFor="flip-time">Time before flip (seconds):</label>
+          <div className="rounded-lg p-4 sm:p-3 mt-4 w-full max-w-md border" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border-color)' }}>
+            <div className="flex items-center gap-4 mb-4 flex-wrap sm:flex-col sm:items-stretch sm:gap-2">
+              <label htmlFor="flip-time" className="text-sm font-medium min-w-[180px] sm:min-w-0 sm:text-center" style={{ color: 'var(--text-color)' }}>
+                Time before flip (seconds):
+              </label>
               <input
                 id="flip-time"
                 type="range"
@@ -313,12 +330,17 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
                 step="0.5"
                 value={autoplayTimings.flipTime / 1000}
                 onChange={(e) => handleFlipTimeChange(parseFloat(e.target.value) * 1000)}
+                className="flex-1 min-w-[100px] h-1.5 bg-gray-300 rounded appearance-none cursor-pointer accent-[var(--button-bg)]"
               />
-              <span>{(autoplayTimings.flipTime / 1000).toFixed(1)}s</span>
+              <span className="text-sm font-semibold min-w-[40px] text-right sm:text-center" style={{ color: 'var(--text-color)' }}>
+                {(autoplayTimings.flipTime / 1000).toFixed(1)}s
+              </span>
             </div>
 
-            <div className="timing-control">
-              <label htmlFor="next-time">Time before next card (seconds):</label>
+            <div className="flex items-center gap-4 flex-wrap sm:flex-col sm:items-stretch sm:gap-2">
+              <label htmlFor="next-time" className="text-sm font-medium min-w-[180px] sm:min-w-0 sm:text-center" style={{ color: 'var(--text-color)' }}>
+                Time before next card (seconds):
+              </label>
               <input
                 id="next-time"
                 type="range"
@@ -327,13 +349,16 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
                 step="0.5"
                 value={autoplayTimings.nextTime / 1000}
                 onChange={(e) => handleNextTimeChange(parseFloat(e.target.value) * 1000)}
+                className="flex-1 min-w-[100px] h-1.5 bg-gray-300 rounded appearance-none cursor-pointer accent-[var(--button-bg)]"
               />
-              <span>{(autoplayTimings.nextTime / 1000).toFixed(1)}s</span>
+              <span className="text-sm font-semibold min-w-[40px] text-right sm:text-center" style={{ color: 'var(--text-color)' }}>
+                {(autoplayTimings.nextTime / 1000).toFixed(1)}s
+              </span>
             </div>
           </div>
         )}
 
-        <div className="deck-info">
+        <div className="text-sm md:text-base mt-2" style={{ color: '#7f8c8d' }}>
           Card {currentCardIndex + 1} of {shuffleMode ? shuffledIndices.length : actualDeck.length}
         </div>
       </div>

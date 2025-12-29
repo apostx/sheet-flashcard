@@ -5,9 +5,9 @@ A static SPA for universal flashcards (any topic/description pairs), deployed to
 
 ## Technology Stack
 - TypeScript with React 19
-- Webpack for bundling (migrating to Vite)
-- CSS for styling (migrating to Tailwind v4)
-- Axios for data fetching (migrating to fetch)
+- Vite for bundling
+- Tailwind CSS v4 for styling
+- Native fetch API for data fetching
 - gh-pages for deployment
 
 ## Architecture
