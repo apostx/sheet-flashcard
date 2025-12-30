@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Flashcard as FlashcardType } from '../types/Flashcard';
 import { useAudio } from '../hooks/useAudio';
 
@@ -11,6 +11,8 @@ interface FlashcardProps {
   onFlip?: () => void;
   isAnimatingBack?: boolean;
   onAnimationEnd?: () => void;
+  cardIndex?: number;
+  totalCards?: number;
 }
 
 const Flashcard: React.FC<FlashcardProps> = ({
@@ -21,13 +23,36 @@ const Flashcard: React.FC<FlashcardProps> = ({
   isFlipped: externalIsFlipped,
   onFlip: externalOnFlip,
   isAnimatingBack = false,
-  onAnimationEnd
+  onAnimationEnd,
+  cardIndex,
+  totalCards
 }) => {
   const [internalIsFlipped, setInternalIsFlipped] = useState(false);
+  const [activeTooltip, setActiveTooltip] = useState<number | null>(null);
   const { playAudio, isPlaying, error } = useAudio();
+  const tagsRef = useRef<HTMLDivElement>(null);
 
   const isControlledExternally = externalIsFlipped !== undefined && externalOnFlip !== undefined;
   const isFlipped = isControlledExternally ? externalIsFlipped : internalIsFlipped;
+
+  // Check if device supports hover (desktop) or not (mobile/touch)
+  const isTouchDevice = useCallback(() => {
+    return window.matchMedia('(hover: none)').matches;
+  }, []);
+
+  // Close tooltip when clicking outside the tags
+  useEffect(() => {
+    if (activeTooltip === null) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (tagsRef.current && !tagsRef.current.contains(event.target as Node)) {
+        setActiveTooltip(null);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [activeTooltip]);
 
   if (!card || !card.front || !card.back) {
     return (
@@ -80,15 +105,23 @@ const Flashcard: React.FC<FlashcardProps> = ({
   const TagsDisplay = () => {
     if (!card.tags || card.tags.length === 0) return null;
 
+    const handleTagClick = (e: React.MouseEvent, index: number) => {
+      // Only enable click toggle on mobile/touch devices
+      if (!isTouchDevice()) return;
+      e.stopPropagation();
+      setActiveTooltip(activeTooltip === index ? null : index);
+    };
+
     return (
-      <div className="flex flex-wrap gap-2 mt-4 justify-center" onClick={(e) => e.stopPropagation()}>
+      <div ref={tagsRef} className="flex flex-wrap gap-1 sm:gap-2 mt-1.5 sm:mt-4 justify-center">
         {card.tags.map((tag, index) => (
           <span
             key={index}
-            className="px-4 py-1.5 text-sm rounded-full transition-colors cursor-pointer border outline-none focus:ring-2 focus:ring-offset-1"
+            className={`px-2 py-0.5 sm:px-4 sm:py-1.5 text-[10px] sm:text-sm rounded-full transition-colors cursor-pointer border outline-none focus:ring-2 focus:ring-offset-1 ${activeTooltip === index ? 'tooltip-active' : ''}`}
             style={{ backgroundColor: 'var(--tag-bg)', color: 'var(--tag-text)', borderColor: 'var(--tag-border)' }}
             data-tooltip={tag.description}
             tabIndex={0}
+            onClick={(e) => handleTagClick(e, index)}
           >
             #{tag.label}
           </span>
@@ -98,65 +131,72 @@ const Flashcard: React.FC<FlashcardProps> = ({
   };
 
   const frontContent = reversed ? (
-    <div className="flex flex-col items-center justify-center w-full h-full text-center overflow-hidden">
-      <h2 className="text-3xl lg:text-4xl sm:text-2xl mb-2 w-full break-words overflow-y-auto max-h-44 leading-snug">{card.back}</h2>
-      {card.backAudioUrl && <AudioButton onClick={playBackAudio} disabled={isPlaying} label={`Play ${card.backLabel || 'back'} audio`} />}
+    <div className="flex flex-col items-center w-full h-full text-center">
+      <div className="flex-1 flex flex-col items-center justify-center w-full min-h-0 overflow-hidden">
+        <h2 className="card-text-back mb-1 w-full break-words leading-tight">{card.back}</h2>
+        {card.backAudioUrl && <AudioButton onClick={playBackAudio} disabled={isPlaying} label={`Play ${card.backLabel || 'back'} audio`} />}
+      </div>
       <TagsDisplay />
     </div>
   ) : (
     <div className="flex flex-col items-center justify-center w-full h-full text-center overflow-hidden">
-      <h2 className="text-3xl lg:text-4xl sm:text-2xl mb-2 w-full break-words overflow-y-auto max-h-44 leading-snug">{card.front}</h2>
+      <h2 className="card-text-front mb-1 w-full break-words leading-tight">{card.front}</h2>
       {card.frontAudioUrl && <AudioButton onClick={playFrontAudio} disabled={isPlaying} label={`Play ${card.frontLabel || 'front'} audio`} />}
     </div>
   );
 
   const backContent = reversed ? (
     <div className="flex flex-col items-center justify-center w-full h-full text-center overflow-hidden">
-      <h2 className="text-3xl lg:text-4xl sm:text-2xl mb-2 w-full break-words overflow-y-auto max-h-44 leading-snug">{card.front}</h2>
+      <h2 className="card-text-front mb-1 w-full break-words leading-tight">{card.front}</h2>
       {card.frontAudioUrl && <AudioButton onClick={playFrontAudio} disabled={isPlaying} label={`Play ${card.frontLabel || 'front'} audio`} />}
     </div>
   ) : (
-    <div className="flex flex-col items-center justify-center w-full h-full text-center overflow-hidden">
-      <h2 className="text-3xl lg:text-4xl sm:text-2xl mb-2 w-full break-words overflow-y-auto max-h-44 leading-snug">{card.back}</h2>
-      {card.backAudioUrl && <AudioButton onClick={playBackAudio} disabled={isPlaying} label={`Play ${card.backLabel || 'back'} audio`} />}
+    <div className="flex flex-col items-center w-full h-full text-center">
+      <div className="flex-1 flex flex-col items-center justify-center w-full min-h-0 overflow-hidden">
+        <h2 className="card-text-back mb-1 w-full break-words leading-tight">{card.back}</h2>
+        {card.backAudioUrl && <AudioButton onClick={playBackAudio} disabled={isPlaying} label={`Play ${card.backLabel || 'back'} audio`} />}
+      </div>
       <TagsDisplay />
     </div>
   );
 
   return (
-    <div
-      className="w-full max-w-2xl h-[400px] lg:h-[420px] sm:h-[280px] perspective-1000 my-8 sm:my-6 mx-auto cursor-pointer outline-none"
-      onClick={handleFlip}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          handleFlip();
-        }
-      }}
-      aria-label="Flashcard, click to flip"
-    >
+    <div className="w-full max-w-2xl mx-auto">
+      {/* Card container with fixed height */}
       <div
-        className={`relative w-full h-full text-center preserve-3d rounded-xl ${
-          isAnimatingBack ? 'animate-flip-back' : 'transition-transform duration-500'
-        }`}
-        style={{
-          boxShadow: 'var(--card-shadow)',
-          transform: isAnimatingBack ? undefined : (isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)')
-        }}
-        onAnimationEnd={(e) => {
-          if (e.target === e.currentTarget) {
-            onAnimationEnd?.();
+        className="w-full h-[400px] lg:h-[420px] sm:h-[280px] perspective-1000 my-8 sm:my-6 cursor-pointer outline-none"
+        onClick={handleFlip}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            handleFlip();
           }
         }}
+        aria-label="Flashcard, click to flip"
       >
-        {/* Front face */}
-        <div className="absolute w-full h-full backface-hidden flex flex-col justify-center items-center rounded-xl p-8 sm:p-6 overflow-hidden border" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border-color)', color: 'var(--card-text)' }}>
-          {frontContent}
-        </div>
-        {/* Back face */}
-        <div className="absolute w-full h-full backface-hidden flex flex-col justify-center items-center rounded-xl p-8 sm:p-6 overflow-hidden rotate-y-180 border" style={{ backgroundColor: 'var(--card-bg-back)', borderColor: 'var(--card-border-color)', color: 'var(--card-text)' }}>
-          {backContent}
+        <div
+          className={`relative w-full h-full text-center preserve-3d rounded-xl ${
+            isAnimatingBack ? 'animate-flip-back' : 'transition-transform duration-500'
+          }`}
+          style={{
+            boxShadow: 'var(--card-shadow)',
+            transform: isAnimatingBack ? undefined : (isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)')
+          }}
+          onAnimationEnd={(e) => {
+            if (e.target === e.currentTarget) {
+              onAnimationEnd?.();
+            }
+          }}
+        >
+          {/* Front face */}
+          <div className="absolute w-full h-full backface-hidden flex flex-col justify-center items-center rounded-xl p-8 sm:p-6 border" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border-color)', color: 'var(--card-text)' }}>
+            {frontContent}
+          </div>
+          {/* Back face */}
+          <div className="absolute w-full h-full backface-hidden flex flex-col justify-center items-center rounded-xl p-8 sm:p-6 rotate-y-180 border" style={{ backgroundColor: 'var(--card-bg-back)', borderColor: 'var(--card-border-color)', color: 'var(--card-text)' }}>
+            {backContent}
+          </div>
         </div>
       </div>
 
@@ -166,17 +206,23 @@ const Flashcard: React.FC<FlashcardProps> = ({
         </div>
       )}
 
-      <div className="mt-4 sm:mt-3 flex justify-between w-full">
+      {/* Navigation buttons - outside fixed-height container */}
+      <div className="mt-4 sm:mt-3 flex justify-between items-center w-full">
         <button
-          onClick={(e) => { e.stopPropagation(); onPrevious(); }}
+          onClick={onPrevious}
           className="px-5 py-2.5 sm:px-4 sm:py-2 sm:text-sm rounded-lg text-white transition-colors cursor-pointer"
           style={{ backgroundColor: 'var(--btn-bg)' }}
           aria-label="Previous flashcard"
         >
           ← Previous
         </button>
+        {cardIndex !== undefined && totalCards !== undefined && (
+          <span className="text-sm sm:text-xs" style={{ color: '#7f8c8d' }}>
+            {cardIndex + 1} / {totalCards}
+          </span>
+        )}
         <button
-          onClick={(e) => { e.stopPropagation(); onNext(); }}
+          onClick={onNext}
           className="px-5 py-2.5 sm:px-4 sm:py-2 sm:text-sm rounded-lg text-white transition-colors cursor-pointer"
           style={{ backgroundColor: 'var(--btn-bg)' }}
           aria-label="Next flashcard"

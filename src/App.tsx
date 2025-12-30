@@ -85,7 +85,7 @@ const App: React.FC = () => {
 
   const renderFlashcards = () => (
     <>
-      <FlashcardDeck flashcards={flashcards} />
+      <FlashcardDeck flashcards={flashcards} theme={theme} toggleTheme={toggleTheme} />
       {isDebugMode && (
         <div className="mt-5 p-4 rounded border w-full max-w-3xl overflow-x-auto" style={{ borderColor: 'var(--card-border)', backgroundColor: 'var(--card-bg)' }}>
           <h3>Debug Information:</h3>
@@ -108,10 +108,10 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen max-w-5xl mx-auto p-5 md:p-4 sm:p-2.5">
-      <header className="text-center mb-8 md:mb-6">
-        <h1 className="text-4xl md:text-3xl sm:text-2xl mb-2" style={{ color: 'var(--header-color)' }}>{headerTitle}</h1>
-        <p className="text-base sm:text-sm mt-0" style={{ color: 'var(--subtitle-color)' }}>Learn with interactive flashcards</p>
-        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+      <header className="text-center mb-8 md:mb-6 sm:mb-4 relative">
+        <h1 className="text-4xl md:text-3xl sm:text-sm mb-2 sm:mb-1 line-clamp-2" style={{ color: 'var(--header-color)' }}>{headerTitle}</h1>
+        <p className="text-base sm:text-xs mt-0 sm:hidden" style={{ color: 'var(--subtitle-color)' }}>Learn with interactive flashcards</p>
+        <ThemeToggle theme={theme} toggleTheme={toggleTheme} className="absolute top-5 right-5 md:top-4 md:right-4 hidden sm:flex" />
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-start">

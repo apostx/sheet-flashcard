@@ -5,6 +5,8 @@ import { parseAutoplayTimings, updateUrlTimings, AutoplayTimings } from '../util
 
 interface FlashcardDeckProps {
   flashcards: FlashcardType[];
+  theme?: 'light' | 'dark';
+  toggleTheme?: () => void;
 }
 
 // Helper to generate shuffled indices synchronously
@@ -34,7 +36,7 @@ const buildActualDeck = (flashcards: FlashcardType[]): FlashcardType[] => {
   return deck;
 };
 
-const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
+const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, theme, toggleTheme }) => {
   // Compute actual deck synchronously for proper initialization
   const actualDeck = useMemo(() => buildActualDeck(flashcards), [flashcards]);
 
@@ -331,50 +333,52 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
 
   return (
     <div className="flex flex-col items-center w-full max-w-3xl mx-auto px-4">
-      <div className="flex flex-col justify-between items-center w-full mb-6 gap-4">
-        <div className="flex gap-4 sm:gap-2 flex-wrap justify-center">
-          <button
-            onClick={toggleShuffleMode}
-            className={`${controlButtonBase} ${shuffleMode ? controlButtonActive : controlButtonInactive}`}
-            style={!shuffleMode ? { backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' } : undefined}
-            data-tooltip={shuffleMode ? "Switch to ordered mode" : "Switch to shuffle mode"}
-            aria-label={shuffleMode ? "Switch to ordered mode" : "Switch to shuffle mode"}
-          >
-            {shuffleMode ? 'Shuffle' : 'Ordered'}
-          </button>
+      {/* Desktop controls - hidden on mobile */}
+      <div className="hidden sm:flex flex-col justify-between items-center w-full mb-6 gap-4">
+        <div className="flex-col items-center gap-4 w-full flex">
+          <div className="flex gap-4 sm:gap-2 flex-wrap justify-center">
+            <button
+              onClick={toggleShuffleMode}
+              className={`${controlButtonBase} ${shuffleMode ? controlButtonActive : controlButtonInactive}`}
+              style={!shuffleMode ? { backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' } : undefined}
+              data-tooltip={shuffleMode ? "Switch to ordered mode" : "Switch to shuffle mode"}
+              aria-label={shuffleMode ? "Switch to ordered mode" : "Switch to shuffle mode"}
+            >
+              {shuffleMode ? 'Shuffle' : 'Ordered'}
+            </button>
 
-          <button
-            onClick={toggleDirection}
-            className={`${controlButtonBase} ${reversed ? controlButtonActive : controlButtonInactive}`}
-            style={!reversed ? { backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' } : undefined}
-            data-tooltip={reversed ? `Show ${backLabel} → ${frontLabel}` : `Show ${frontLabel} → ${backLabel}`}
-            aria-label={reversed ? `Switch to ${frontLabel} first` : `Switch to ${backLabel} first`}
-          >
-            {reversed ? `${backLabel} → ${frontLabel}` : `${frontLabel} → ${backLabel}`}
-          </button>
+            <button
+              onClick={toggleDirection}
+              className={`${controlButtonBase} ${reversed ? controlButtonActive : controlButtonInactive}`}
+              style={!reversed ? { backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' } : undefined}
+              data-tooltip={reversed ? `Show ${backLabel} → ${frontLabel}` : `Show ${frontLabel} → ${backLabel}`}
+              aria-label={reversed ? `Switch to ${frontLabel} first` : `Switch to ${backLabel} first`}
+            >
+              {reversed ? `${backLabel} → ${frontLabel}` : `${frontLabel} → ${backLabel}`}
+            </button>
 
-          <button
-            onClick={toggleAutoplay}
-            className={`${controlButtonBase} ${autoplay ? controlButtonActive : controlButtonInactive}`}
-            style={!autoplay ? { backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' } : undefined}
-            data-tooltip={autoplay ? "Stop autoplay" : "Start autoplay"}
-            aria-label={autoplay ? "Stop autoplay" : "Start autoplay"}
-          >
-            {autoplay ? 'Pause' : 'Play'}
-          </button>
+            <button
+              onClick={toggleAutoplay}
+              className={`${controlButtonBase} ${autoplay ? controlButtonActive : controlButtonInactive}`}
+              style={!autoplay ? { backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' } : undefined}
+              data-tooltip={autoplay ? "Stop autoplay" : "Start autoplay"}
+              aria-label={autoplay ? "Stop autoplay" : "Start autoplay"}
+            >
+              {autoplay ? 'Pause' : 'Play'}
+            </button>
 
-          <button
-            onClick={() => setShowTimingControls(!showTimingControls)}
-            className={`${controlButtonBase} ${showTimingControls ? controlButtonActive : controlButtonInactive}`}
-            style={!showTimingControls ? { backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' } : undefined}
-            data-tooltip="Autoplay timing settings"
-            aria-label="Autoplay timing settings"
-          >
-            Timing
-          </button>
-        </div>
+            <button
+              onClick={() => setShowTimingControls(!showTimingControls)}
+              className={`${controlButtonBase} ${showTimingControls ? controlButtonActive : controlButtonInactive}`}
+              style={!showTimingControls ? { backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' } : undefined}
+              data-tooltip="Autoplay timing settings"
+              aria-label="Autoplay timing settings"
+            >
+              Timing
+            </button>
+          </div>
 
-        {showTimingControls && (
+          {showTimingControls && (
           <div className="rounded-lg p-4 sm:p-3 mt-4 w-full max-w-md border" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border-color)' }}>
             <div className="flex items-center gap-4 mb-4 flex-wrap sm:flex-col sm:items-stretch sm:gap-2">
               <label htmlFor="flip-time" className="text-sm font-medium min-w-[180px] sm:min-w-0 sm:text-center" style={{ color: 'var(--text-color)' }}>
@@ -415,6 +419,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
             </div>
           </div>
         )}
+        </div>
 
         <div className="text-sm md:text-base mt-2" style={{ color: '#7f8c8d' }}>
           Card {currentCardIndex + 1} of {shuffleMode ? shuffledIndices.length : actualDeck.length}
@@ -430,7 +435,38 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards }) => {
         onFlip={handleFlip}
         isAnimatingBack={isAnimatingBack}
         onAnimationEnd={handleAnimationEnd}
+        cardIndex={currentCardIndex}
+        totalCards={shuffleMode ? shuffledIndices.length : actualDeck.length}
       />
+
+      {/* Mobile controls - shown below card */}
+      <div className="flex sm:hidden flex-col items-center w-full mt-4 gap-3">
+        <div className="flex gap-2 flex-wrap justify-center">
+          <button
+            onClick={toggleShuffleMode}
+            className={`${controlButtonBase} ${shuffleMode ? controlButtonActive : controlButtonInactive}`}
+            style={!shuffleMode ? { backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' } : undefined}
+          >
+            {shuffleMode ? 'Shuffle' : 'Ordered'}
+          </button>
+          <button
+            onClick={toggleAutoplay}
+            className={`${controlButtonBase} ${autoplay ? controlButtonActive : controlButtonInactive}`}
+            style={!autoplay ? { backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' } : undefined}
+          >
+            {autoplay ? 'Pause' : 'Play'}
+          </button>
+          {theme && toggleTheme && (
+            <button
+              onClick={toggleTheme}
+              className={`${controlButtonBase} ${controlButtonInactive}`}
+              style={{ backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', borderColor: 'var(--card-border-color)' }}
+            >
+              {theme === 'light' ? 'Dark' : 'Light'}
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

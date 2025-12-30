@@ -3,12 +3,13 @@ import React from 'react';
 interface ThemeToggleProps {
   theme: 'light' | 'dark';
   toggleTheme: () => void;
+  className?: string;
 }
 
-const ThemeToggle: React.FC<ThemeToggleProps> = ({ theme, toggleTheme }) => {
+const ThemeToggle: React.FC<ThemeToggleProps> = ({ theme, toggleTheme, className = '' }) => {
   return (
     <button
-      className="absolute top-5 right-5 md:top-4 md:right-4 sm:top-2.5 sm:right-2.5 p-2 rounded-full w-10 h-10 md:w-9 md:h-9 sm:w-8 sm:h-8 flex items-center justify-center transition-colors"
+      className={`p-2 rounded-full w-10 h-10 md:w-9 md:h-9 sm:w-8 sm:h-8 flex items-center justify-center transition-colors ${className}`}
       style={{
         backgroundColor: 'var(--theme-toggle-bg)',
       }}

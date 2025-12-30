@@ -101,7 +101,10 @@ body {
   background: var(--btn-bg);
   color: var(--button-text);
   font-size: 12px;
-  white-space: nowrap;
+  white-space: normal;
+  max-width: 280px;
+  min-width: 120px;
+  text-align: center;
   border-radius: 4px;
   opacity: 0;
   visibility: hidden;
@@ -126,4 +129,21 @@ body {
     opacity: 1;
     visibility: visible;
   }
+}
+
+/* Active tooltip via click toggle - mobile only */
+@media (hover: none) {
+  [data-tooltip].tooltip-active::after {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* Fluid typography for card content */
+.card-text-front {
+  font-size: clamp(1.25rem, 5vw, 2.25rem);
+}
+
+.card-text-back {
+  font-size: clamp(1.125rem, 4vw, 2.25rem);
 }
