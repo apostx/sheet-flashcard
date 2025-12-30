@@ -8,7 +8,8 @@ A static SPA for universal flashcards (any topic/description pairs), deployed to
 - Vite for bundling
 - Tailwind CSS v4 for styling
 - Native fetch API for data fetching
-- gh-pages for deployment
+- Storybook for component development
+- GitHub Actions for automated deployment to GitHub Pages
 
 ## Architecture
 No backend, database, or authentication layer exists. The application reads exclusively from public Google Sheets using CSV export endpoints. Client-side only (static SPA).
@@ -32,10 +33,11 @@ src/
 - Shuffle mode and direction toggle
 - Card repetition count support
 - Hashtag-style tags with tooltip descriptions
+- Keyboard navigation (←/→ for prev/next, ↑/↓/Space to flip)
 - URL parameters for customization (spreadsheetId, sheetId, flipTime, nextTime, debug)
 
 ## Data Source
-Google Spreadsheet structure:
+Google Spreadsheet structure (row 1 is header: column 1 = front label, column 2 = back label):
 - Column 1: Front side content (required)
 - Column 2: Front audio URL (optional)
 - Column 3: Back side content (required)
