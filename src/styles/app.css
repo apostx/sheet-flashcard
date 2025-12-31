@@ -131,12 +131,10 @@ body {
   }
 }
 
-/* Active tooltip via click toggle - mobile only */
-@media (hover: none) {
-  [data-tooltip].tooltip-active::after {
-    opacity: 1;
-    visibility: visible;
-  }
+/* Active tooltip via click toggle (JS handles mobile-only logic) */
+[data-tooltip].tooltip-active::after {
+  opacity: 1;
+  visibility: visible;
 }
 
 /* Fluid typography for card content */

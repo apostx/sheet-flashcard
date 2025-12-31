@@ -15,16 +15,17 @@ const App: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const isDebugMode = getBooleanQueryParam('debug', false);
 
-  // Auto-scroll to hide mobile browser URL bar
+  // Auto-scroll to hide mobile browser URL bar after content loads
   useEffect(() => {
-    const hideUrlBar = () => {
-      if (window.scrollY === 0) {
-        window.scrollTo(0, 1);
-      }
-    };
-    // Small delay to ensure page is loaded
-    setTimeout(hideUrlBar, 100);
-  }, []);
+    if (!loading && flashcards.length > 0) {
+      const hideUrlBar = () => {
+        if (window.scrollY === 0) {
+          window.scrollTo(0, 1);
+        }
+      };
+      setTimeout(hideUrlBar, 100);
+    }
+  }, [loading, flashcards.length]);
 
   useEffect(() => {
     const loadFlashcards = async () => {
