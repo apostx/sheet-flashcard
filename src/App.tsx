@@ -15,6 +15,17 @@ const App: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const isDebugMode = getBooleanQueryParam('debug', false);
 
+  // Auto-scroll to hide mobile browser URL bar
+  useEffect(() => {
+    const hideUrlBar = () => {
+      if (window.scrollY === 0) {
+        window.scrollTo(0, 1);
+      }
+    };
+    // Small delay to ensure page is loaded
+    setTimeout(hideUrlBar, 100);
+  }, []);
+
   useEffect(() => {
     const loadFlashcards = async () => {
       try {
@@ -108,20 +119,13 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen max-w-5xl mx-auto p-5 md:p-4 sm:p-2.5">
-      <header className="text-center mb-8 md:mb-6 sm:mb-4 relative">
+      <header className="text-center md:mb-6 sm:mb-4 relative">
         <h1 className="text-4xl md:text-3xl sm:text-sm mb-2 sm:mb-1 line-clamp-2" style={{ color: 'var(--header-color)' }}>{headerTitle}</h1>
-        <p className="text-base sm:text-xs mt-0 sm:hidden" style={{ color: 'var(--subtitle-color)' }}>Learn with interactive flashcards</p>
         <ThemeToggle theme={theme} toggleTheme={toggleTheme} className="absolute top-5 right-5 md:top-4 md:right-4 hidden sm:flex" />
       </header>
-
       <main className="flex-1 flex flex-col items-center justify-start">
         {loading ? renderLoadingState() : error ? renderErrorState() : renderFlashcards()}
       </main>
-
-      <footer className="mt-8 md:mt-6 text-center text-sm sm:text-xs" style={{ color: 'var(--subtitle-color)' }}>
-        <p>Sheet Flashcard</p>
-        <p className="italic text-xs sm:text-[0.7rem] mt-2">Tap or click a card to flip it</p>
-      </footer>
     </div>
   );
 };

@@ -35,9 +35,9 @@ const Flashcard: React.FC<FlashcardProps> = ({
   const isControlledExternally = externalIsFlipped !== undefined && externalOnFlip !== undefined;
   const isFlipped = isControlledExternally ? externalIsFlipped : internalIsFlipped;
 
-  // Check if device supports hover (desktop) or not (mobile/touch)
+  // Check if device is touch-capable (more reliable than hover media query)
   const isTouchDevice = useCallback(() => {
-    return window.matchMedia('(hover: none)').matches;
+    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   }, []);
 
   // Close tooltip when clicking outside the tags
