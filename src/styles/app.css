@@ -138,13 +138,17 @@ body {
 }
 
 /* Card content: allow HTML-authored lists inside centered faces */
+.card-content {
+  max-width: 40ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .card-content ul,
 .card-content ol {
-  display: inline-block;
-  text-align: left;
-  list-style-position: inside;
   margin: 0.25em 0;
-  padding: 0;
+  padding-left: 1.5em;
+  text-align: left;
 }
 
 .card-content ul {

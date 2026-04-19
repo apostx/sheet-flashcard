@@ -43,7 +43,7 @@ const CardFace: React.FC<CardFaceProps> = ({ text, audioUrl, audioLabel, onPlayA
       >
         <div
           ref={textRef}
-          className="card-content mb-1 w-full break-words leading-tight"
+          className="card-content mb-1 w-full leading-tight"
           dangerouslySetInnerHTML={{ __html: text }}
         />
         {audioUrl && (
