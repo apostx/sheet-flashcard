@@ -1,7 +1,7 @@
 # Sheet Flashcard Project Documentation
 
 ## Overview
-A static SPA for universal flashcards (any topic/description pairs), deployed to GitHub Pages at https://apostx.github.io/sheet-flashcard/
+A static SPA for universal flashcards (any topic/description pairs), deployed to GitHub Pages at http://sheetflashcard.sallai.cc/
 
 ## Technology Stack
 - TypeScript with React 19

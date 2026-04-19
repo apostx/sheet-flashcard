@@ -16,7 +16,7 @@ A universal flashcard application powered by Google Sheets. Create flashcards fo
 
 ## Quick Start
 
-1. Visit https://apostx.github.io/sheet-flashcard/
+1. Visit http://sheetflashcard.sallai.cc/
 2. Or use your own spreadsheet: `?spreadsheetId=YOUR_ID`
 
 ## Data Structure

@@ -1,9 +1,9 @@
 {
   "name": "sheet-flashcard",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "A universal flashcard application powered by Google Sheets",
   "type": "module",
-  "homepage": "https://apostx.github.io/sheet-flashcard/",
+  "homepage": "http://sheetflashcard.sallai.cc/",
   "scripts": {
     "dev": "vite",
     "start": "vite",

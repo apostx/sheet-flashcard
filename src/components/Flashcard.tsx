@@ -1,6 +1,59 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Flashcard as FlashcardType } from '../types/Flashcard';
 import { useAudio } from '../hooks/useAudio';
+import { useAutoFitText } from '../hooks/useAutoFitText';
+
+interface CardFaceProps {
+  text: string;
+  audioUrl?: string;
+  audioLabel: string;
+  onPlayAudio: (e: React.MouseEvent) => void;
+  isPlaying: boolean;
+  tags?: React.ReactNode;
+}
+
+const AudioButton: React.FC<{
+  onClick: (e: React.MouseEvent) => void;
+  disabled: boolean;
+  label: string;
+}> = ({ onClick, disabled, label }) => (
+  <button
+    className="p-2 rounded mt-2 flex items-center justify-center min-w-10 min-h-10 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+    style={{ backgroundColor: 'var(--audio-btn-bg)', color: 'var(--card-text)' }}
+    onClick={onClick}
+    disabled={disabled}
+    aria-label={label}
+  >
+    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+    </svg>
+  </button>
+);
+
+const CardFace: React.FC<CardFaceProps> = ({ text, audioUrl, audioLabel, onPlayAudio, isPlaying, tags }) => {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+  useAutoFitText(textRef, wrapperRef, [text]);
+
+  return (
+    <div className="flex flex-col items-center w-full h-full text-center">
+      <div
+        ref={wrapperRef}
+        className="flex-1 flex flex-col items-center justify-center w-full min-h-0 overflow-hidden"
+      >
+        <div
+          ref={textRef}
+          className="card-content mb-1 w-full break-words leading-tight"
+          dangerouslySetInnerHTML={{ __html: text }}
+        />
+        {audioUrl && (
+          <AudioButton onClick={onPlayAudio} disabled={isPlaying} label={audioLabel} />
+        )}
+      </div>
+      {tags}
+    </div>
+  );
+};
 
 interface FlashcardProps {
   card: FlashcardType;
@@ -88,20 +141,6 @@ const Flashcard: React.FC<FlashcardProps> = ({
     }
   };
 
-  const AudioButton = ({ onClick, disabled, label }: { onClick: (e: React.MouseEvent) => void; disabled: boolean; label: string }) => (
-    <button
-      className="p-2 rounded mt-2 flex items-center justify-center min-w-10 min-h-10 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-      style={{ backgroundColor: 'var(--audio-btn-bg)', color: 'var(--card-text)' }}
-      onClick={onClick}
-      disabled={disabled}
-      aria-label={label}
-    >
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-      </svg>
-    </button>
-  );
-
   const TagsDisplay = () => {
     if (!card.tags || card.tags.length === 0) return null;
 
@@ -130,34 +169,42 @@ const Flashcard: React.FC<FlashcardProps> = ({
     );
   };
 
-  const frontContent = reversed ? (
-    <div className="flex flex-col items-center w-full h-full text-center">
-      <div className="flex-1 flex flex-col items-center justify-center w-full min-h-0 overflow-hidden">
-        <h2 className="card-text-back mb-1 w-full break-words leading-tight">{card.back}</h2>
-        {card.backAudioUrl && <AudioButton onClick={playBackAudio} disabled={isPlaying} label={`Play ${card.backLabel || 'back'} audio`} />}
-      </div>
-      <TagsDisplay />
-    </div>
+  const frontFace = reversed ? (
+    <CardFace
+      text={card.back}
+      audioUrl={card.backAudioUrl}
+      audioLabel={`Play ${card.backLabel || 'back'} audio`}
+      onPlayAudio={playBackAudio}
+      isPlaying={isPlaying}
+      tags={<TagsDisplay />}
+    />
   ) : (
-    <div className="flex flex-col items-center justify-center w-full h-full text-center overflow-hidden">
-      <h2 className="card-text-front mb-1 w-full break-words leading-tight">{card.front}</h2>
-      {card.frontAudioUrl && <AudioButton onClick={playFrontAudio} disabled={isPlaying} label={`Play ${card.frontLabel || 'front'} audio`} />}
-    </div>
+    <CardFace
+      text={card.front}
+      audioUrl={card.frontAudioUrl}
+      audioLabel={`Play ${card.frontLabel || 'front'} audio`}
+      onPlayAudio={playFrontAudio}
+      isPlaying={isPlaying}
+    />
   );
 
-  const backContent = reversed ? (
-    <div className="flex flex-col items-center justify-center w-full h-full text-center overflow-hidden">
-      <h2 className="card-text-front mb-1 w-full break-words leading-tight">{card.front}</h2>
-      {card.frontAudioUrl && <AudioButton onClick={playFrontAudio} disabled={isPlaying} label={`Play ${card.frontLabel || 'front'} audio`} />}
-    </div>
+  const backFace = reversed ? (
+    <CardFace
+      text={card.front}
+      audioUrl={card.frontAudioUrl}
+      audioLabel={`Play ${card.frontLabel || 'front'} audio`}
+      onPlayAudio={playFrontAudio}
+      isPlaying={isPlaying}
+    />
   ) : (
-    <div className="flex flex-col items-center w-full h-full text-center">
-      <div className="flex-1 flex flex-col items-center justify-center w-full min-h-0 overflow-hidden">
-        <h2 className="card-text-back mb-1 w-full break-words leading-tight">{card.back}</h2>
-        {card.backAudioUrl && <AudioButton onClick={playBackAudio} disabled={isPlaying} label={`Play ${card.backLabel || 'back'} audio`} />}
-      </div>
-      <TagsDisplay />
-    </div>
+    <CardFace
+      text={card.back}
+      audioUrl={card.backAudioUrl}
+      audioLabel={`Play ${card.backLabel || 'back'} audio`}
+      onPlayAudio={playBackAudio}
+      isPlaying={isPlaying}
+      tags={<TagsDisplay />}
+    />
   );
 
   return (
@@ -190,12 +237,12 @@ const Flashcard: React.FC<FlashcardProps> = ({
           }}
         >
           {/* Front face */}
-          <div className="absolute w-full h-full backface-hidden flex flex-col justify-center items-center rounded-xl p-8 sm:p-6 border" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border-color)', color: 'var(--card-text)' }}>
-            {frontContent}
+          <div className="absolute w-full h-full backface-hidden flex flex-col justify-center items-center rounded-xl p-4 sm:p-3 border" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border-color)', color: 'var(--card-text)' }}>
+            {frontFace}
           </div>
           {/* Back face */}
-          <div className="absolute w-full h-full backface-hidden flex flex-col justify-center items-center rounded-xl p-8 sm:p-6 rotate-y-180 border" style={{ backgroundColor: 'var(--card-bg-back)', borderColor: 'var(--card-border-color)', color: 'var(--card-text)' }}>
-            {backContent}
+          <div className="absolute w-full h-full backface-hidden flex flex-col justify-center items-center rounded-xl p-4 sm:p-3 rotate-y-180 border" style={{ backgroundColor: 'var(--card-bg-back)', borderColor: 'var(--card-border-color)', color: 'var(--card-text)' }}>
+            {backFace}
           </div>
         </div>
       </div>
