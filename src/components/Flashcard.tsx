@@ -237,11 +237,11 @@ const Flashcard: React.FC<FlashcardProps> = ({
           }}
         >
           {/* Front face */}
-          <div className="absolute w-full h-full backface-hidden flex flex-col justify-center items-center rounded-xl p-4 sm:p-3 border" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border-color)', color: 'var(--card-text)' }}>
+          <div className="absolute w-full h-full backface-hidden flex flex-col justify-center items-center rounded-xl p-8 sm:p-6 border" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border-color)', color: 'var(--card-text)' }}>
             {frontFace}
           </div>
           {/* Back face */}
-          <div className="absolute w-full h-full backface-hidden flex flex-col justify-center items-center rounded-xl p-4 sm:p-3 rotate-y-180 border" style={{ backgroundColor: 'var(--card-bg-back)', borderColor: 'var(--card-border-color)', color: 'var(--card-text)' }}>
+          <div className="absolute w-full h-full backface-hidden flex flex-col justify-center items-center rounded-xl p-8 sm:p-6 rotate-y-180 border" style={{ backgroundColor: 'var(--card-bg-back)', borderColor: 'var(--card-border-color)', color: 'var(--card-text)' }}>
             {backFace}
           </div>
         </div>

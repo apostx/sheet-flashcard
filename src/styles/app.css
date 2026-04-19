@@ -147,6 +147,14 @@ body {
   padding: 0;
 }
 
+.card-content ul {
+  list-style-type: disc;
+}
+
+.card-content ol {
+  list-style-type: decimal;
+}
+
 .card-content li {
   margin: 0.1em 0;
 }

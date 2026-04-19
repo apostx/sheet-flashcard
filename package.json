@@ -1,6 +1,6 @@
 {
   "name": "sheet-flashcard",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "description": "A universal flashcard application powered by Google Sheets",
   "type": "module",
   "homepage": "http://sheetflashcard.sallai.cc/",
