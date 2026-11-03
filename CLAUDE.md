@@ -12,17 +12,17 @@ A static SPA for universal flashcards (any topic/description pairs), deployed to
 - GitHub Actions for automated deployment to GitHub Pages
 
 ## Architecture
-No backend, database, or authentication layer exists. The application reads exclusively from public Google Sheets using CSV export endpoints. Client-side only (static SPA).
+No backend, database, or authentication layer exists. The application reads public Google Sheets through CSV export endpoints, or decks that other apps handed over and that are saved in localStorage. Client-side only (static SPA).
 
 ## Project Structure
 ```
 src/
-├── components/    # React components (Flashcard, FlashcardDeck, ThemeToggle)
+├── components/    # React components (Flashcard, FlashcardDeck, ThemeToggle, SavedDecks)
 ├── hooks/         # Custom hooks (useAudio, useTheme)
-├── services/      # API services (spreadsheetService)
+├── services/      # spreadsheetService (fetch + parseFlashcards), receive (DomainMap export protocol), localDecks
 ├── styles/        # CSS files
 ├── types/         # TypeScript type definitions
-└── utils/         # Utility functions (urlUtils, urlParams)
+└── utils/         # Utility functions (urlUtils, urlParams, sanitizeHtml)
 ```
 
 ## Key Features
@@ -34,7 +34,10 @@ src/
 - Card repetition count support
 - Hashtag-style tags with tooltip descriptions
 - Keyboard navigation (←/→ for prev/next, ↑/↓/Space to flip)
-- URL parameters for customization (spreadsheetId, sheetId, flipTime, nextTime, debug)
+- URL parameters for customization (spreadsheetId, sheetId, flipTime, nextTime, debug, deck, receive)
+- Decks from other apps: `?receive` waits for a `postMessage` export from `window.opener` (DomainMap export protocol v1: ready → export → received/failed), saves it in localStorage (`sheet-flashcard:decks`, upsert by slugged dataset id + title) and reloads with `?deck=<id>`
+- Saved decks button (SavedDecks): rendered only when decks exist, next to ThemeToggle (desktop) and in the mobile control row; opens or deletes decks
+- Received HTML is sanitized with a dependency-free allowlist (DOMParser); Google Sheets content is rendered as before
 
 ## Data Source
 Google Spreadsheet structure (row 1 is header: column 1 = front label, column 2 = back label):

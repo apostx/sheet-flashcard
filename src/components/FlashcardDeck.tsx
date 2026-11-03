@@ -7,6 +7,8 @@ interface FlashcardDeckProps {
   flashcards: FlashcardType[];
   theme?: 'light' | 'dark';
   toggleTheme?: () => void;
+  /** Extra controls at the end of the row shown on small screens. */
+  mobileControls?: React.ReactNode;
 }
 
 // Helper to generate shuffled indices synchronously
@@ -36,7 +38,7 @@ const buildActualDeck = (flashcards: FlashcardType[]): FlashcardType[] => {
   return deck;
 };
 
-const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, theme, toggleTheme }) => {
+const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, theme, toggleTheme, mobileControls }) => {
   // Compute actual deck synchronously for proper initialization
   const actualDeck = useMemo(() => buildActualDeck(flashcards), [flashcards]);
 
@@ -465,6 +467,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, theme, toggle
               {theme === 'light' ? 'Dark' : 'Light'}
             </button>
           )}
+          {mobileControls}
         </div>
       </div>
     </div>

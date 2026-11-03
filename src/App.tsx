@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import FlashcardDeck from './components/FlashcardDeck';
 import ThemeToggle from './components/ThemeToggle';
+import SavedDecks from './components/SavedDecks';
 import { fetchFlashcardData } from './services/spreadsheetService';
+import { receiveDeck } from './services/receive';
 import { Flashcard } from './types/Flashcard';
 import { getBooleanQueryParam } from './utils/urlUtils';
 import { useTheme } from './hooks/useTheme';
@@ -14,6 +16,8 @@ const App: React.FC = () => {
 
   const { theme, toggleTheme } = useTheme();
   const isDebugMode = getBooleanQueryParam('debug', false);
+  // With ?receive, another app hands over a deck (see services/receive.ts)
+  const isReceiving = getBooleanQueryParam('receive', false);
 
   // Auto-scroll to hide mobile browser URL bar after content loads
   useEffect(() => {
@@ -28,6 +32,18 @@ const App: React.FC = () => {
   }, [loading, flashcards.length]);
 
   useEffect(() => {
+    if (!isReceiving) return;
+    return receiveDeck({
+      onReceived: (id) => window.location.replace(`${window.location.pathname}?deck=${encodeURIComponent(id)}`),
+      onError: (message) => {
+        setError(message);
+        setLoading(false);
+      },
+    });
+  }, [isReceiving]);
+
+  useEffect(() => {
+    if (isReceiving) return;
     const loadFlashcards = async () => {
       try {
         setLoading(true);
@@ -53,7 +69,7 @@ const App: React.FC = () => {
     };
 
     loadFlashcards();
-  }, []);
+  }, [isReceiving]);
 
   const renderLoadingState = () => (
     <div className="flex flex-col items-center justify-center p-8 text-lg text-center w-full max-w-xl text-[#3498db]">
@@ -64,7 +80,7 @@ const App: React.FC = () => {
           animation: 'spin 1s ease-in-out infinite'
         }}
       />
-      <p>Loading flashcards...</p>
+      <p>{isReceiving ? 'Receiving flashcards...' : 'Loading flashcards...'}</p>
     </div>
   );
 
@@ -97,7 +113,12 @@ const App: React.FC = () => {
 
   const renderFlashcards = () => (
     <>
-      <FlashcardDeck flashcards={flashcards} theme={theme} toggleTheme={toggleTheme} />
+      <FlashcardDeck
+        flashcards={flashcards}
+        theme={theme}
+        toggleTheme={toggleTheme}
+        mobileControls={<SavedDecks variant="text" />}
+      />
       {isDebugMode && (
         <div className="mt-5 p-4 rounded border w-full max-w-3xl overflow-x-auto" style={{ borderColor: 'var(--card-border)', backgroundColor: 'var(--card-bg)' }}>
           <h3>Debug Information:</h3>
@@ -122,7 +143,10 @@ const App: React.FC = () => {
     <div className="flex flex-col min-h-screen max-w-5xl mx-auto p-5 md:p-4 sm:p-2.5">
       <header className="text-center md:mb-6 sm:mb-4 relative">
         <h1 className="text-4xl md:text-3xl sm:text-sm mb-2 sm:mb-1 line-clamp-2" style={{ color: 'var(--header-color)' }}>{headerTitle}</h1>
-        <ThemeToggle theme={theme} toggleTheme={toggleTheme} className="absolute top-5 right-5 md:top-4 md:right-4 hidden sm:flex" />
+        <div className="absolute top-5 right-5 md:top-4 md:right-4 hidden sm:flex items-center gap-2">
+          <SavedDecks variant="icon" />
+          <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+        </div>
       </header>
       <main className="flex-1 flex flex-col items-center justify-start">
         {loading ? renderLoadingState() : error ? renderErrorState() : renderFlashcards()}
